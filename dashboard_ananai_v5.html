@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard · SE 500 kV ANANAI · Engetecnica</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --or:#E8560A;--or2:#F47235;--or-pale:#FFF0E8;--or-mid:#FDDCCC;
+  --dk:#0D0D0C;--dk2:#1A1A18;
+  --ink:#0F0F0E;--ink2:#3A3A38;--ink3:#6A6A66;
+  --rule:rgba(0,0,0,.10);--rule2:rgba(0,0,0,.18);
+  --sf:#FFF;--sf2:#F6F5F2;--sf3:#ECEBE8;
+  --r:8px;--rlg:12px;
+  --G:#0A6B2E;--Gbg:#CEEEDB;--Gtx:#033A16;
+  --B:#0D3FA8;--Bbg:#C8DAFF;--Btx:#061A5C;
+  --R:#B01A08;--Rbg:#FFD8D3;--Rtx:#580800;
+  --Y:#7A4F00;--Ybg:#FFE8A0;--Ytx:#3A2200;
+  --Gr:#4A4A48;--Grbg:#DDDDD8;--Grtx:#1A1A18;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Sora',sans-serif;background:var(--sf2);color:var(--ink);min-height:100vh;font-size:15px}
+
+/* TOPBAR */
+.topbar{background:var(--dk);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:52px;border-bottom:3px solid var(--or);gap:1rem}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;border-radius:6px;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.logo-txt{font-size:13px;font-weight:600;color:#fff}
+.logo-txt span{color:var(--or2)}
+.topbar-r{font-size:10px;color:rgba(255,255,255,.4);text-align:right;line-height:1.6}
+.topbar-r b{color:rgba(255,255,255,.8);font-weight:600}
+
+/* PROJ HDR */
+.proj-hdr{background:var(--sf);border-bottom:2px solid var(--or);padding:1rem 2rem;display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.proj-tag{font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--or);text-transform:uppercase;margin-bottom:3px}
+.proj-name{font-size:20px;font-weight:700;color:var(--ink);line-height:1.2;text-transform:uppercase}
+.proj-sub{font-size:11px;color:var(--ink3);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.proj-date-lbl{font-size:9px;color:var(--ink3);font-weight:700;text-align:right;text-transform:uppercase}
+.proj-date-val{font-size:14px;font-weight:700;color:var(--ink);text-align:right;margin-top:1px}
+
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);background:var(--sf);border-bottom:2px solid var(--rule2)}
+.kpi-cell{padding:.9rem 1.25rem;border-right:1px solid var(--rule);position:relative;overflow:hidden}
+.kpi-cell::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.kpi-cell.c-or::before{background:var(--or)}
+.kpi-cell.c-g::before{background:var(--G)}
+.kpi-cell.c-b::before{background:var(--B)}
+.kpi-cell.c-r::before{background:var(--R)}
+.kpi-cell:last-child{border-right:none}
+.kpi-lbl{font-size:11px;font-weight:700;letter-spacing:.10em;color:var(--ink3);text-transform:uppercase;margin-bottom:5px}
+.kpi-val{font-size:30px;font-weight:700;color:var(--ink);line-height:1}
+.kpi-sub{font-size:11px;color:var(--ink3);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+
+/* PRINT BTN */
+.print-btn{font-family:'Sora',sans-serif;font-size:11px;font-weight:700;padding:7px 16px;border-radius:6px;border:none;background:var(--or);color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:5px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
+.print-btn:hover{background:var(--or2)}
+
+/* SHELL */
+.shell{max-width:1440px;margin:0 auto;padding:1.25rem 2rem 2rem}
+
+/* TABS */
+.tab-bar{display:flex;border-bottom:2px solid var(--rule2);margin-bottom:1.25rem;overflow-x:auto;background:var(--sf)}
+.tab{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;padding:10px 18px;cursor:pointer;color:var(--ink3);border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em;transition:color .12s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--or);border-bottom-color:var(--or)}
+.panel{display:none}
+.panel.active{display:block}
+
+/* SECTION TITLE */
+.stitle{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--dk);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.stitle::after{content:'';flex:1;height:2px;background:var(--or);opacity:.25}
+
+/* PANEL TOOLBAR */
+.ptoolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+
+/* DISC CARDS */
+.disc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.disc-card{background:var(--sf);border:1.5px solid var(--rule2);border-radius:var(--rlg);padding:1rem 1.1rem;border-top:4px solid var(--rule2);cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.disc-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.10)}
+.disc-card.expanded{border-color:var(--or);box-shadow:0 4px 20px rgba(232,86,10,.18)}
+.dc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dc-name{font-size:12px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.06em}
+.dc-badge{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700}
+.prog-track{height:5px;border-radius:3px;background:var(--sf3);margin:8px 0 10px}
+.prog-bar{height:100%;border-radius:3px}
+.dc-stats{display:flex;flex-wrap:wrap;gap:8px}
+.dstat{font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px}
+.dstat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dc-expand-hint{font-size:11px;color:var(--ink3);margin-top:8px;text-transform:uppercase;letter-spacing:.06em}
+/* Expandable detail panel under disc cards */
+.disc-detail{display:none;margin-top:10px;border:1.5px solid var(--rule2);border-radius:var(--rlg);overflow:hidden;background:var(--sf2)}
+.disc-detail.open{display:block}
+.disc-detail-hdr{padding:9px 14px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;justify-content:space-between}
+.disc-detail table{width:100%;border-collapse:collapse;font-size:13px}
+.disc-detail th{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--rule2);background:var(--sf3);text-align:left}
+.disc-detail td{padding:8px 12px;border-bottom:1px solid var(--rule);background:var(--sf);vertical-align:middle;color:var(--ink)}
+.disc-detail tr:last-child td{border-bottom:none}
+.disc-detail tr:hover td{background:var(--sf2)!important}
+
+/* FILTERS */
+.flt-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.flt-lbl{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.10em;text-transform:uppercase}
+.flt-btn{font-family:'Sora',sans-serif;font-size:12px;font-weight:600;padding:5px 13px;border-radius:20px;border:1.5px solid var(--rule2);background:var(--sf);cursor:pointer;color:var(--ink2);transition:all .12s;text-transform:uppercase;letter-spacing:.04em}
+.flt-btn:hover{border-color:var(--or2);color:var(--or)}
+.flt-btn.on{background:var(--or);color:#fff;border-color:var(--or)}
+
+/* TABLE */
+.tbl-wrap{background:var(--sf);border:1.5px solid var(--rule2);border-radius:var(--rlg);overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.10em;color:var(--sf);text-transform:uppercase;padding:10px 12px;border-bottom:2px solid var(--rule2);background:var(--dk);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--rule);color:var(--ink);vertical-align:middle;background:var(--sf)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--sf2)!important}
+.prio-dot{display:inline-flex;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700;align-items:center;justify-content:center;flex-shrink:0}
+.dpill{font-size:11px;padding:3px 9px;border-radius:5px;font-weight:700;white-space:nowrap}
+.spill{font-size:11px;padding:3px 10px;border-radius:5px;font-weight:700;white-space:nowrap}
+.mono{font-variant-numeric:tabular-nums}
+.dur-bar-wrap{display:flex;align-items:center;gap:5px}
+.dur-mini{height:5px;border-radius:3px;flex:1;background:var(--sf3);min-width:40px}
+.dur-fill{height:100%;border-radius:3px}
+
+/* WEEK CARDS */
+.week-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}
+.wk-card{background:var(--sf);border:1.5px solid var(--rule2);border-radius:var(--rlg);padding:1rem;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column}
+.wk-card:hover{box-shadow:0 4px 16px rgba(232,86,10,.15);border-color:var(--or2)}
+.wk-card.cur{border:2.5px solid var(--or);background:var(--or-pale)}
+.wk-card.past{opacity:.55}
+.wk-cur-tag{font-size:11px;font-weight:700;color:var(--or);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.wk-lbl{font-size:12px;color:var(--ink3);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.wk-count{font-size:36px;font-weight:700;color:var(--ink);line-height:1}
+.wk-sub{font-size:11px;color:var(--ink3);margin-bottom:10px;margin-top:1px;text-transform:uppercase;letter-spacing:.06em}
+.wk-discs{display:flex;flex-direction:column;gap:4px;flex:1;margin-bottom:10px}
+.wk-disc-row{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:500}
+.wk-pip{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.wk-disc-n{font-weight:700;margin-left:auto;font-size:13px}
+.wk-btn{width:100%;font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:var(--or);background:none;border:1.5px solid var(--or-mid);border-radius:6px;padding:7px;cursor:pointer;transition:all .12s;text-transform:uppercase;letter-spacing:.04em}
+.wk-card:hover .wk-btn,.wk-card.cur .wk-btn{background:var(--or);color:#fff;border-color:var(--or)}
+
+/* MONTH */
+.mo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.mo-col{background:var(--sf);border:1.5px solid var(--rule2);border-radius:var(--rlg);overflow:hidden}
+.mo-hdr{padding:10px 14px;border-bottom:2px solid var(--rule2);display:flex;align-items:baseline;justify-content:space-between;cursor:pointer;background:var(--dk);transition:background .12s}
+.mo-hdr:hover{background:var(--dk2)}
+.mo-name{font-size:14px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.06em}
+.mo-name.cur{color:var(--or2)}
+.mo-cnt{font-size:12px;color:rgba(255,255,255,.5);font-weight:600}
+.mo-body{padding:7px;display:flex;flex-direction:column;gap:5px;max-height:280px;overflow-y:auto}
+.mo-body.expanded{max-height:none}
+.mo-disc{padding:7px 10px;border-radius:6px}
+.mo-disc-hdr{font-size:12px;font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.mo-disc-item{font-size:12px;opacity:.85;line-height:1.6}
+.mo-show-more{font-size:11px;font-weight:700;color:var(--or);text-align:center;padding:6px;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;border-top:1px solid var(--rule)}
+
+/* TIMELINE */
+.tl-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tl-wrap{overflow-x:auto;border:1.5px solid var(--rule2);border-radius:var(--rlg);background:var(--sf)}
+.tl-table{border-collapse:collapse;font-size:10px;white-space:nowrap;min-width:100%}
+.tl-table th{padding:6px 8px;background:var(--dk);color:#fff;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1px solid #333;text-align:center;white-space:nowrap}
+.tl-table td{padding:3px 4px;border:1px solid var(--rule);vertical-align:middle;background:var(--sf)}
+.tl-act-cell{padding:6px 12px!important;font-size:12px;font-weight:600;color:var(--ink);text-align:left;width:260px;min-width:260px;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-right:2px solid var(--rule2)!important;background:var(--sf2)!important}
+.tl-date-hdr{font-size:9px;padding:4px 3px!important;min-width:28px;max-width:28px;text-align:center}
+.tl-date-hdr.today-th{background:var(--or)!important;color:#fff!important;font-weight:700}
+.tl-date-hdr.sel-th{background:#FF8C00!important;color:#fff!important;font-weight:700}
+.tl-date-hdr.wknd-th{background:#1C1C1A!important;color:rgba(255,255,255,.4)!important}
+.tl-disc-hdr td{background:var(--dk2)!important;color:#fff!important;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:8px 14px!important;border-left:4px solid var(--or)!important}
+.tl-today-col{background:rgba(232,86,10,.07)!important}
+.tl-sel-col{background:rgba(255,140,0,.13)!important}
+.tl-wknd-col{background:#F2F0EC!important}
+.tl-act-today{background:#FFA500!important;border-radius:3px;height:14px}
+.tl-act-plan{height:14px;border-radius:3px;opacity:.9}
+.tl-legend-row{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink2);padding:8px 0;margin-top:8px;border-top:1px solid var(--rule2)}
+
+/* DAILY */
+.day-nav{display:flex;gap:6px;align-items:center}
+.day-nav-btn{font-family:'Sora',sans-serif;font-size:13px;font-weight:700;padding:7px 16px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);cursor:pointer;color:var(--ink2);transition:all .12s;text-transform:uppercase;letter-spacing:.04em}
+.day-nav-btn:hover:not(:disabled){border-color:var(--or);color:var(--or)}
+.day-nav-btn:disabled{opacity:.3;cursor:default}
+.day-lbl{font-size:15px;font-weight:700;color:var(--or);min-width:260px;text-align:center;text-transform:uppercase;letter-spacing:.04em}
+.day-act-list{display:flex;flex-direction:column;gap:6px}
+.day-act-card{background:var(--sf);border:1.5px solid var(--rule2);border-radius:var(--r);padding:13px 16px;display:flex;align-items:center;gap:10px;border-left:5px solid var(--rule2)}
+.day-act-card.ongoing{border-left-color:var(--G)}
+.day-act-card.planned{border-left-color:var(--B)}
+.day-act-card.late{border-left-color:var(--R)}
+.day-disc-tag{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:700;flex-shrink:0;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+.day-act-name{font-size:14px;font-weight:600;color:var(--ink);flex:1}
+.day-act-grupo{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
+.day-act-dates{font-size:12px;color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.day-dur-badge{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:700;white-space:nowrap}
+.day-remain-badge{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:700;white-space:nowrap}
+.day-empty{text-align:center;padding:3rem;color:var(--ink3);font-size:15px;text-transform:uppercase;letter-spacing:.06em}
+
+/* RESTRICTIONS */
+.restr-filter-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.restr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px}
+.restr-card{background:var(--sf);border:1.5px solid var(--rule2);border-radius:var(--rlg);padding:1.1rem 1.2rem;border-left:5px solid var(--rule2)}
+.restr-card.cat-material{border-left-color:var(--B)}
+.restr-card.cat-equipamento{border-left-color:var(--Y)}
+.restr-card.cat-recurso{border-left-color:var(--G)}
+.restr-card.cat-outros{border-left-color:var(--or)}
+.restr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px}
+.restr-ativ{font-size:13px;font-weight:700;color:var(--ink);flex:1}
+.restr-cat{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:700;flex-shrink:0;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+.restr-txt{font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:8px}
+.restr-meta{display:flex;gap:7px;flex-wrap:wrap;font-size:11px;color:var(--ink3)}
+.restr-chip{padding:3px 9px;border-radius:4px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+
+/* WHATSAPP */
+.wa-box{background:var(--sf);border:1.5px solid var(--rule2);border-radius:var(--rlg);overflow:hidden;margin-top:1.5rem}
+.wa-hdr{background:var(--dk);color:#fff;padding:.9rem 1.4rem;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.wa-hdr-title{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.wa-hdr-title span{color:var(--or2)}
+.wa-date-ctrl{display:flex;align-items:center;gap:8px}
+.wa-date-input{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;padding:6px 12px;border-radius:6px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+.wa-date-input::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7}
+.wa-copy-btn{font-family:'Sora',sans-serif;font-size:12px;font-weight:700;padding:7px 18px;border-radius:6px;border:1.5px solid rgba(255,255,255,.3);background:var(--or);color:#fff;cursor:pointer;transition:background .12s;text-transform:uppercase;letter-spacing:.04em}
+.wa-copy-btn:hover{background:var(--or2)}
+.wa-content{padding:1.1rem 1.4rem;font-family:monospace;font-size:13px;line-height:1.8;color:var(--ink);white-space:pre-wrap;word-break:break-word;background:var(--sf2);max-height:400px;overflow-y:auto}
+
+/* LEGEND */
+.legend-bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:.9rem 2rem;border-top:1px solid var(--rule2);background:var(--sf);font-size:12px;color:var(--ink2)}
+.leg-ttl{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.10em;text-transform:uppercase}
+.leg-sect{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:4px;font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.04em}
+.leg-sq{width:11px;height:11px;border-radius:2px}
+.leg-dot{width:10px;height:10px;border-radius:50%}
+
+/* MODAL */
+.mwrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:999;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.mwrap.open{display:flex}
+.modal{background:var(--sf);border-radius:14px;width:100%;max-width:800px;border:1.5px solid var(--rule2);overflow:hidden;margin:auto;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:var(--dk);gap:12px;border-bottom:3px solid var(--or)}
+.modal-title{font-size:14px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.04em}
+.modal-title span{color:var(--or2)}
+.modal-close{font-family:'Sora',sans-serif;background:rgba(255,255,255,.1);border:none;cursor:pointer;font-size:20px;color:rgba(255,255,255,.7);line-height:1;padding:4px 9px;border-radius:5px}
+.modal-close:hover{background:rgba(255,255,255,.2);color:#fff}
+.modal-kpis{display:flex;gap:1px;background:var(--rule);border-bottom:1px solid var(--rule2)}
+.mk{flex:1;background:var(--sf);padding:12px 16px;text-align:center}
+.mk-val{font-size:24px;font-weight:700}
+.mk-lbl{font-size:11px;color:var(--ink3);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+.modal-body{padding:1.2rem 1.5rem;max-height:62vh;overflow-y:auto}
+.modal-body::-webkit-scrollbar{width:3px}
+.modal-body::-webkit-scrollbar-thumb{background:var(--sf3);border-radius:2px}
+.mdsc{margin-bottom:16px}
+.mdsc-hdr{font-size:12px;font-weight:700;padding:7px 14px;border-radius:5px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;letter-spacing:.06em}
+.mrow{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:6px;margin-bottom:4px;border:1.5px solid var(--rule);transition:background .1s}
+.mrow:hover{background:var(--sf2)}
+.mrow-name{font-size:13px;color:var(--ink);flex:1;min-width:0;font-weight:600}
+.mrow-grupo{font-size:11px;color:var(--ink3);white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.mrow-dates{font-size:12px;color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* FOOTER */
+.footer{background:var(--dk);color:rgba(255,255,255,.3);text-align:center;font-size:11px;padding:14px;letter-spacing:.06em;text-transform:uppercase}
+.footer b{color:var(--or2);font-weight:600}
+
+/* PRINT — handled via new window (printTab/printModal), minimal rules here */
+@media print{
+  @page{size:A3 landscape;margin:10mm}
+  body{background:#fff!important}
+  .topbar,.tab-bar,.legend-bar,.footer,.mwrap,.wa-box,
+  .ptoolbar,.print-btn,.day-nav,.restr-filter-bar{display:none!important}
+  .panel{display:none!important}
+  .panel.print-active{display:block!important}
+  .shell{padding:0!important;max-width:100%!important}
+  .kpi-strip{display:grid!important}
+  .proj-hdr{display:flex!important}
+  .tl-wrap,.tbl-wrap,.mo-body{overflow:visible!important;max-height:none!important}
+}
+.print-hdr{display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo-wrap">
+    <div class="logo-mark">ET</div>
+    <div class="logo-txt">ENGETECNICA <span>Engenharia e Construção</span></div>
+  </div>
+  <div class="topbar-r"><div>SE 500 kV PONTA GROSSA · ANANAI</div><div><b>DASHBOARD DE CAMPO · CRO</b></div></div>
+</div>
+
+<div class="proj-hdr">
+  <div>
+    <div class="proj-tag">CRO · PLANO DE AÇÃO · ACOMPANHAMENTO DE CAMPO</div>
+    <div class="proj-name">SE 500 kV Ponta Grossa — ANANAI</div>
+    <div class="proj-sub">Atividades por disciplina · Civil · EMEC · Elétrica · Comissionamento · Energização</div>
+  </div>
+  <div><div class="proj-date-lbl">Atualizado em</div><div class="proj-date-val">18 / 05 / 2026</div></div>
+</div>
+
+<div class="kpi-strip" id="kpis"></div>
+
+<div class="shell">
+<div class="tab-bar">
+  <button class="tab active" onclick="swTab('disciplinas',this)">Disciplinas</button>
+  <button class="tab" onclick="swTab('atividades',this)">Atividades</button>
+  <button class="tab" onclick="swTab('timeline',this)">Timeline</button>
+  <button class="tab" onclick="swTab('semanas',this)">Por Semana</button>
+  <button class="tab" onclick="swTab('meses',this)">Por Mês</button>
+  <button class="tab" onclick="swTab('diario',this)">📅 Diário</button>
+  <button class="tab" onclick="swTab('restricoes',this)">⚠️ Restrições</button>
+</div>
+
+<!-- DISCIPLINAS -->
+<div id="disciplinas" class="panel active">
+  <div class="ptoolbar"><div class="stitle" style="flex:1">Resumo por disciplina — clique em uma disciplina para expandir as atividades</div><button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button></div>
+  <div class="disc-grid" id="disc-grid"></div>
+  <div id="disc-detail-container"></div>
+</div>
+
+<!-- ATIVIDADES -->
+<div id="atividades" class="panel">
+  <div class="ptoolbar"><div class="flt-bar" id="flt-bar"></div><button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button></div>
+  <div class="tbl-wrap">
+    <table style="table-layout:auto;width:100%">
+      <thead><tr>
+        <th style="width:26px">P</th>
+        <th style="width:90px">Disciplina</th>
+        <th>Atividade</th>
+        <th style="width:68px">Início</th>
+        <th style="width:68px">Término</th>
+        <th style="width:80px">Duração</th>
+        <th style="width:110px">⏱ Restam</th>
+        <th style="width:105px">Status</th>
+        <th>Grupo</th>
+        <th style="width:120px">Restrição</th>
+      </tr></thead>
+      <tbody id="act-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div id="timeline" class="panel">
+  <div class="ptoolbar">
+    <div class="tl-ctrl">
+      <div class="stitle" style="margin-bottom:0;flex:none">Timeline — Previsto por atividade</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em">Dia selecionado:</span>
+        <input type="date" id="tl-date-input" value="2026-05-18" style="font-family:'Sora',sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);color:var(--ink);cursor:pointer" onchange="buildTimeline()">
+        <button onclick="resetTlDate()" style="font-family:'Sora',sans-serif;font-size:10px;font-weight:700;padding:5px 10px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);cursor:pointer;color:var(--or);text-transform:uppercase;letter-spacing:.04em">Hoje</button>
+      </div>
+    </div>
+    <button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button>
+  </div>
+  <div class="tl-legend-row">
+    <span style="font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3)">Legenda:</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:var(--or);border-radius:2px"></span> Dia selecionado</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:var(--B);border-radius:2px;opacity:.85"></span> Atividade planejada</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:var(--G);border-radius:2px;opacity:.85"></span> Em andamento</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:var(--R);border-radius:2px;opacity:.85"></span> Atrasada</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:#FFA500;border-radius:2px"></span> Ativa no dia selecionado</span>
+  </div>
+  <div class="tl-wrap" id="tl-wrap"></div>
+</div>
+
+<!-- SEMANAS -->
+<div id="semanas" class="panel">
+  <div class="ptoolbar"><div class="stitle" style="flex:1">Atividades por semana — clique para ver detalhamento</div><button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button></div>
+  <div class="week-grid" id="week-grid"></div>
+</div>
+
+<!-- MESES -->
+<div id="meses" class="panel">
+  <div class="ptoolbar"><div class="stitle" style="flex:1">Visão macro mensal — clique em um mês para expandir todas as atividades</div><button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button></div>
+  <div class="mo-grid" id="mo-grid"></div>
+</div>
+
+<!-- DIÁRIO -->
+<div id="diario" class="panel">
+  <div class="ptoolbar">
+    <div class="day-nav">
+      <button class="day-nav-btn" id="day-prev" onclick="navDay(-1)">← Anterior</button>
+      <span class="day-lbl" id="day-lbl"></span>
+      <button class="day-nav-btn" id="day-next" onclick="navDay(1)">Próximo →</button>
+    </div>
+    <button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button>
+  </div>
+  <div id="day-body"></div>
+</div>
+
+<!-- RESTRIÇÕES -->
+<div id="restricoes" class="panel">
+  <div class="ptoolbar"><div class="restr-filter-bar" id="restr-bar"></div><button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button></div>
+  <div id="restr-kpis" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap"></div>
+  <div class="restr-grid" id="restr-grid"></div>
+</div>
+
+</div><!-- /shell -->
+
+<!-- WHATSAPP BOX -->
+<div style="max-width:1440px;margin:0 auto;padding:0 2rem 2rem">
+  <div class="wa-box">
+    <div class="wa-hdr">
+      <div class="wa-hdr-title">📱 Atividades previstas — <span id="wa-date-title"></span></div>
+      <div class="wa-date-ctrl">
+        <span style="font-size:10px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Selecionar dia:</span>
+        <input type="date" id="wa-date-input" class="wa-date-input" value="2026-05-18" onchange="buildWaText()">
+        <button class="wa-copy-btn" onclick="copyWa()">📋 Copiar para WhatsApp</button>
+      </div>
+    </div>
+    <div class="wa-content" id="wa-content"></div>
+  </div>
+</div>
+
+<div class="legend-bar" id="legend-bar"></div>
+
+<div class="footer">
+  Dashboard <b>Engetecnica Engenharia e Construção</b> · SE 500 kV Ponta Grossa – ANANAI · 2026 &nbsp;·&nbsp;
+  Para link público: arraste este arquivo em <b>netlify.com/drop</b> e receba o link em segundos.
+</div>
+
+<!-- PRINT HEADER (hidden on screen via CSS, shown on print) -->
+<div class="print-hdr" style="align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px">
+  <div>
+    <div style="font-size:8px;font-weight:700;letter-spacing:.12em;color:#E8560A;text-transform:uppercase;margin-bottom:2px">CRO · Plano de Ação · Engetecnica Engenharia e Construção</div>
+    <div style="font-size:14px;font-weight:700;color:#0F0F0E">SE 500 kV Ponta Grossa — ANANAI</div>
+    <div style="font-size:9px;color:#6A6A66;margin-top:2px;text-transform:uppercase;letter-spacing:.06em">Aba: <b id="print-tab-label">Dashboard</b></div>
+  </div>
+  <div style="text-align:right;font-size:9px;color:#6A6A66;font-weight:700">Emissão: 18/05/2026</div>
+</div>
+
+<!-- MODAL semanas -->
+<div class="mwrap" id="mwrap" onclick="closeMod(event)">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="mtitle"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="print-btn" onclick="printModal('mwrap')" style="font-size:10px;padding:5px 12px">🖨 A3</button>
+        <button class="modal-close" onclick="closeModDirect()">✕</button>
+      </div>
+    </div>
+    <div class="modal-kpis" id="mkpis"></div>
+    <div class="modal-body" id="mbody"></div>
+  </div>
+</div>
+
+<!-- MODAL meses -->
+<div class="mwrap" id="mo-mwrap" onclick="closeMoMod(event)">
+  <div class="modal" style="max-width:860px">
+    <div class="modal-hdr">
+      <div class="modal-title" id="mo-mtitle"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="print-btn" onclick="printModal('mo-mwrap')" style="font-size:10px;padding:5px 12px">🖨 A3</button>
+        <button class="modal-close" onclick="closeMoModDirect()">✕</button>
+      </div>
+    </div>
+    <div class="modal-kpis" id="mo-mkpis"></div>
+    <div class="modal-body" id="mo-mbody"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════ DATA ═══════════════════════
+const ACTS = [{"disc": "CIVIL", "prio": 1, "ativ": "Civil - Drenagem Porosa", "grupo": "Drenagem", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Dissipador 1", "grupo": "Drenagem", "start": "2026-06-15", "end": "2026-06-19", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Escada [Dissipador 2]", "grupo": "Drenagem", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Dissipador 2", "grupo": "Drenagem", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Escada [Dissipador 3]", "grupo": "Drenagem", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Dissipador 3", "grupo": "Drenagem", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Meia Cana", "grupo": "Drenagem", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Bacia de Infiltra\u00e7\u00e3o", "grupo": "Drenagem", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Britamento Bacia - Reatores", "grupo": "Reatores", "start": "2026-05-18", "end": "2026-05-20", "dur": 3, "restric": "Material: brita dispon\u00edvel", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Casa de Comando - Placas e Extintores", "grupo": "Casa de Comando", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "Material: extintores e placas de sinaliza\u00e7\u00e3o", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Casa de Comando - Rampa/Escada", "grupo": "Casa de Comando", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Casa de Comando - SPDA Externo", "grupo": "Casa de Comando", "start": "2026-05-20", "end": "2026-05-29", "dur": 10, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Casa de Comando - Po\u00e7o Artesiano", "grupo": "Casa de Comando", "start": "2026-05-19", "end": "2026-06-07", "dur": 20, "restric": "Equipamento: perfuratriz aprovada", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Funda\u00e7\u00e3o do Cub\u00edculo", "grupo": "Cub\u00edculo", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Britamento de P\u00e1tio", "grupo": "Britamento", "start": "2026-05-18", "end": "2026-05-29", "dur": 12, "restric": "Equipamento: britadeira m\u00f3vel", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Grama", "grupo": "Grama", "start": "2026-05-18", "end": "2026-06-06", "dur": 20, "restric": "Material: muda de grama", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Cerca de Neutro", "grupo": "Cerca Neutro", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "Material: mour\u00f5es e arame", "progress": {}}, {"disc": "CIVIL", "prio": 3, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Abrigo Inc\u00eandio P\u00e1tio", "grupo": "Abrigo Inc\u00eandio", "start": "2026-05-18", "end": "2026-06-05", "dur": 19, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Via Pavimentada - Terraplanagem", "grupo": "Pavimenta\u00e7\u00e3o", "start": "2026-05-21", "end": "2026-06-05", "dur": 16, "restric": "Recurso: operador de motoniveladora", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Via Pavimentada - Meio Fio", "grupo": "Pavimenta\u00e7\u00e3o", "start": "2026-05-22", "end": "2026-06-06", "dur": 16, "restric": "Material: meio-fio", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Via Pavimentada - Blocos Intertravados", "grupo": "Pavimenta\u00e7\u00e3o", "start": "2026-05-25", "end": "2026-07-10", "dur": 46, "restric": "Material: blocos de concreto intertravado", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Solo Grampeado", "grupo": "Solo Grampeado", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Estacionamento (\u00c1rea da ENGIE)", "grupo": "Estacionamento", "start": "2026-06-22", "end": "2026-07-10", "dur": 19, "restric": "Outros: aprova\u00e7\u00e3o ENGIE", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Cerca Limite e Port\u00e3o (ENGIE)", "grupo": "Estacionamento", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "Material: port\u00e3o e mour\u00f5es", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Instala\u00e7\u00f5es El\u00e9tricas Casa de Comando", "grupo": "Casa de Comando", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Ar Condicionado + Automatismo", "grupo": "Casa de Comando", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "restric": "Equipamento: unidades de AR Split", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Eletrocalha Casa de Comando", "grupo": "Casa de Comando", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "Material: eletrocalhas e suportes", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Infra CFTV + Instala\u00e7\u00e3o das C\u00e2meras", "grupo": "Casa de Comando", "start": "2026-05-21", "end": "2026-05-30", "dur": 10, "restric": "Material: c\u00e2meras e cabos CFTV", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Infra Controle de Acesso + Equipamentos", "grupo": "Casa de Comando", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "restric": "Equipamento: leitores biom\u00e9tricos", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Infra Prote\u00e7\u00e3o Inc\u00eandio + Sensores", "grupo": "Casa de Comando", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "restric": "Material: detectores de fuma\u00e7a", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Jumper P\u00f3rtico Eixo A \u2013 C2", "grupo": "Barramento Flex\u00edvel", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Barramento de Neutro", "grupo": "Barramento R\u00edgido", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Jumper Barra B1 \u2013 Eixo 17", "grupo": "Barramento Flex\u00edvel", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Jumper Barra B2 \u2013 Eixo 17", "grupo": "Barramento Flex\u00edvel", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Interliga\u00e7\u00e3o PR/REATOR - C2", "grupo": "Barramento Equipamentos", "start": "2026-05-18", "end": "2026-05-29", "dur": 12, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Blindagem Coluna SPDA \u2013 Eixo E/24", "grupo": "Blindagem", "start": "2026-05-21", "end": "2026-05-21", "dur": 1, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Blindagem Eixo 17 \u2013 Barra B1", "grupo": "Blindagem", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Blindagem Colunas Existentes \u2013 Barra B1", "grupo": "Blindagem", "start": "2026-06-06", "end": "2026-06-07", "dur": 2, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Malha de Aterramento - Rabichos", "grupo": "Malha de Aterramento", "start": "2026-05-18", "end": "2026-05-30", "dur": 13, "restric": "Material: cabos de aterramento", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Encaminhamento Casa Comando \u2192 CUB", "grupo": "Encaminhamento", "start": "2026-05-18", "end": "2026-05-27", "dur": 10, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Encaminhamento TSA", "grupo": "Encaminhamento", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Encaminhamento CFTV [P\u00f3rtico]", "grupo": "Encaminhamento", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Encaminhamento Ilumina\u00e7\u00e3o [P\u00f3rtico]", "grupo": "Encaminhamento", "start": "2026-05-25", "end": "2026-06-05", "dur": 12, "restric": "Material: luminar\u00edas de p\u00f3rtico", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Encaminhamento OPGW", "grupo": "Encaminhamento", "start": "2026-05-18", "end": "2026-05-20", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Encaminhamento OPLAT", "grupo": "Encaminhamento", "start": "2026-05-18", "end": "2026-06-03", "dur": 17, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Encaminhamento Interliga\u00e7\u00e3o ENGIE", "grupo": "Encaminhamento", "start": "2026-05-20", "end": "2026-05-22", "dur": 3, "restric": "Outros: alinhamento com equipe ENGIE", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Encaminhamento TPC Barra 1/2", "grupo": "Encaminhamento", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 1, "ativ": "ELE - Lan\u00e7amento de Cabos - C1", "grupo": "Lan\u00e7amento Cabos C1", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "Material: cabos de controle C1", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o Painel SPCS - C1", "grupo": "Interliga\u00e7\u00e3o Cabos C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o P\u00e1tio Equipamentos - C1", "grupo": "Interliga\u00e7\u00e3o Cabos C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 1, "ativ": "ELE - Lan\u00e7amento de Cabos - C2", "grupo": "Lan\u00e7amento Cabos C2", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "Material: cabos de controle C2", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o Painel SPCS - C2", "grupo": "Interliga\u00e7\u00e3o Cabos C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o P\u00e1tio Equipamentos - C2", "grupo": "Interliga\u00e7\u00e3o Cabos C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 1, "ativ": "ELE - Lan\u00e7amento de Cabos - Interface", "grupo": "Lan\u00e7amento Cabos Interface", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "Material: cabos interface", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o Sala de Rel\u00e9s - Interface", "grupo": "Interliga\u00e7\u00e3o Cabos Interface", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o Equipamentos - Interface", "grupo": "Interliga\u00e7\u00e3o Cabos Interface", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 1, "ativ": "ELE - CFTV", "grupo": "CFTV", "start": "2026-05-25", "end": "2026-05-26", "dur": 2, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Ilumina\u00e7\u00e3o P\u00e1tio/Reator", "grupo": "Ilumina\u00e7\u00e3o Reator", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "Material: luminar\u00edas de p\u00e1tio", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - N0 Cabos - C1", "grupo": "Comissionamento Cabos C1", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - N0 Cabos - C2", "grupo": "Comissionamento Cabos C2", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 2, "ativ": "COMISSIONAMENTO - N0 Cabos - Interface", "grupo": "Comissionamento Cabos Interface", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - Equipamentos SECC - C2", "grupo": "Comissionamento SECC C2", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - Malha Principal", "grupo": "Comissionamento Malha", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - Malha - Rabichos", "grupo": "Comissionamento Rabichos", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 2, "ativ": "COMISSIONAMENTO - TSA", "grupo": "Comissionamento S.A.", "start": "2026-05-27", "end": "2026-05-29", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 2, "ativ": "COMISSIONAMENTO - Cub\u00edculo", "grupo": "Comissionamento S.A.", "start": "2026-05-25", "end": "2026-05-28", "dur": 4, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "In\u00edcio do Comissionamento", "grupo": "In\u00edcio Comissionamento", "start": "2026-05-19", "end": "2026-05-19", "dur": 1, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - SPCS - C1", "grupo": "Comissionamento SPCS C1", "start": "2026-05-19", "end": "2026-05-29", "dur": 11, "restric": "Recurso: engenheiro de comissionamento", "progress": {}}, {"disc": "COMISSIO.", "prio": 2, "ativ": "COMISSIONAMENTO - SPCS - C2", "grupo": "Comissionamento SPCS C2", "start": "2026-06-01", "end": "2026-06-12", "dur": 12, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 3, "ativ": "COMISSIONAMENTO - SPCS - Interface", "grupo": "Comissionamento SPCS Interface", "start": "2026-06-15", "end": "2026-06-26", "dur": 12, "restric": "", "progress": {}}, {"disc": "ENERGIZA\u00c7\u00c3O", "prio": 1, "ativ": "Desligamento - Integra\u00e7\u00e3o Cub\u00edculo", "grupo": "Integra\u00e7\u00e3o Cub\u00edculo", "start": "2026-05-30", "end": "2026-05-31", "dur": 2, "restric": "Outros: aprova\u00e7\u00e3o ONS e janela de desligamento", "progress": {}}, {"disc": "ENERGIZA\u00c7\u00c3O", "prio": 1, "ativ": "Desligamento - Integra\u00e7\u00e3o Barra B2", "grupo": "Integra\u00e7\u00e3o Barra B2", "start": null, "end": null, "dur": null, "restric": "Outros: data a definir com ONS", "progress": {}}, {"disc": "ENERGIZA\u00c7\u00c3O", "prio": 1, "ativ": "Desligamento - Integra\u00e7\u00e3o Barra B1", "grupo": "Integra\u00e7\u00e3o Barra B1", "start": "2026-07-07", "end": "2026-07-08", "dur": 2, "restric": "Outros: aprova\u00e7\u00e3o ONS", "progress": {}}, {"disc": "ENERGIZA\u00c7\u00c3O", "prio": 0, "ativ": "Energiza\u00e7\u00e3o", "grupo": "Energiza\u00e7\u00e3o", "start": "2026-07-10", "end": "2026-07-10", "dur": 1, "restric": "Outros: aprova\u00e7\u00e3o ONS e ANEEL", "progress": {}}];
+
+// ═══════════════════════ CONSTANTS ═══════════════════════
+const TODAY_STR = '2026-05-18';
+const TODAY = new Date(TODAY_STR);
+const DC = {
+  'CIVIL':        {bg:'#C8DCFF',fill:'#0D3FA8',text:'#061A5C',badge:'#99B8FF'},
+  'EMEC':         {bg:'#BAEECF',fill:'#0A6B2E',text:'#033A16',badge:'#7ED9A4'},
+  'ELÉTRICA':     {bg:'#FFE490',fill:'#7A4F00',text:'#3A2200',badge:'#FFD040'},
+  'COMISSIO.':    {bg:'#DDD0FF',fill:'#5020C0',text:'#200870',badge:'#B89CFF'},
+  'ENERGIZAÇÃO':  {bg:'#FFD0B8',fill:'#C84000',text:'#601800',badge:'#FF9060'},
+};
+const PC  = ['','#B01A08','#7A4F00','#0A6B2E','#4A4A48'];
+const PBG = ['','#FFD8D3','#FFE490','#BAEECF','#DDDDD8'];
+const PT  = ['','#580800','#3A2200','#033A16','#1A1A18'];
+const SL  = {planned:'Planejada',ongoing:'Em andamento',late:'Atrasada',pending:'A definir'};
+const SFC = {planned:'#0D3FA8',ongoing:'#0A6B2E',late:'#B01A08',pending:'#4A4A48'};
+const SBG = {planned:'#C8DCFF',ongoing:'#BAEECF',late:'#FFD8D3',pending:'#DDDDD8'};
+const ST  = {planned:'#061A5C',ongoing:'#033A16',late:'#580800',pending:'#1A1A18'};
+const MP  = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const DNF = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const CAT_COLORS = {
+  'Material':   {cls:'cat-material',   bg:'#C8DCFF',color:'#061A5C'},
+  'Equipamento':{cls:'cat-equipamento',bg:'#FFE490',color:'#3A2200'},
+  'Recurso':    {cls:'cat-recurso',    bg:'#BAEECF',color:'#033A16'},
+  'Outros':     {cls:'cat-outros',     bg:'#FFD0B8',color:'#601800'},
+};
+
+// ═══════════════════════ HELPERS ═══════════════════════
+// Parse date string as LOCAL date (avoids UTC timezone shift bug)
+function pd(s){
+  if(!s)return null;
+  const [y,m,d]=s.split('-').map(Number);
+  return new Date(y,m-1,d);
+}
+function diffDays(a,b){return Math.round((pd(b)-pd(a))/86400000)}
+function fd(s,yr){
+  if(!s)return'—';
+  const [y,m,d]=s.split('-').map(Number);
+  const b=`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}`;
+  return yr?b+`/${y}`:b;
+}
+function sta(a,refStr){
+  const ref=refStr?pd(refStr):TODAY;
+  const s=pd(a.start),e=pd(a.end);
+  if(!s)return'pending';
+  if(ref<s)return'planned';
+  if(ref>e)return'late';
+  return'ongoing';
+}
+function daysLeftFor(a,refStr){
+  const ref=refStr?new Date(refStr):TODAY;
+  const refS=refStr||TODAY_STR;
+  const s=pd(a.start),e=pd(a.end);
+  const st=sta(a,refS);
+  if(!s)return null;
+  if(st==='planned')return-diffDays(refS,a.start);
+  if(st==='ongoing')return diffDays(refS,a.end);
+  if(st==='late')   return-diffDays(a.end,refS);
+  return null;
+}
+function dlLabel(a,refStr){
+  const st=sta(a,refStr||TODAY_STR);
+  const dl=daysLeftFor(a,refStr);
+  if(dl===null)return{txt:'—',color:'var(--ink3)'};
+  if(st==='planned')return{txt:`−${Math.abs(dl)}d p/ início`,color:'var(--B)'};
+  if(st==='ongoing')return{txt:`+${dl}d restantes`,color:'var(--G)'};
+  if(st==='late')   return{txt:`−${Math.abs(dl)}d atrasada`,color:'var(--R)'};
+  return{txt:'—',color:'var(--ink3)'};
+}
+function wkKey(s){
+  const dt=pd(s),dy=dt.getDay();
+  const mon=new Date(dt);mon.setDate(dt.getDate()-((dy+6)%7));
+  return`${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`;
+}
+function wkLabel(wk){
+  const m=pd(wk),f=new Date(m);f.setDate(m.getDate()+6);
+  const fs=`${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}-${String(f.getDate()).padStart(2,'0')}`;
+  return`${fd(wk)}–${fd(fs)}`;
+}
+function durBar(a){
+  if(!a.start||!a.end||!a.dur)return`<span style="color:var(--ink3)">—</span>`;
+  const el=Math.max(0,diffDays(a.start,TODAY_STR));
+  const pct=Math.min(100,Math.round(el/a.dur*100));
+  const c=DC[a.disc]?.fill||'#888';
+  return`<div class="dur-bar-wrap"><span class="mono" style="flex-shrink:0;min-width:26px;font-weight:700">${a.dur}d</span><div class="dur-mini"><div class="dur-fill" style="width:${pct}%;background:${c}"></div></div></div>`;
+}
+function getRestrCat(r){
+  if(!r)return'Outros';
+  if(r.startsWith('Material'))return'Material';
+  if(r.startsWith('Equipamento'))return'Equipamento';
+  if(r.startsWith('Recurso'))return'Recurso';
+  return'Outros';
+}
+
+// ═══════════════════════ KPIs ═══════════════════════
+const discs=[...new Set(ACTS.map(a=>a.disc))];
+const total=ACTS.length,ong=ACTS.filter(a=>sta(a)==='ongoing').length,
+      pln=ACTS.filter(a=>sta(a)==='planned').length,
+      lat=ACTS.filter(a=>sta(a)==='late').length,
+      p1=ACTS.filter(a=>a.prio===1).length;
+document.getElementById('kpis').innerHTML=`
+  <div class="kpi-cell c-or"><div class="kpi-lbl">Total</div><div class="kpi-val">${total}</div><div class="kpi-sub">${discs.length} disciplinas</div></div>
+  <div class="kpi-cell c-g"><div class="kpi-lbl">Em andamento</div><div class="kpi-val" style="color:var(--G)">${ong}</div><div class="kpi-sub">Hoje</div></div>
+  <div class="kpi-cell c-b"><div class="kpi-lbl">Planejadas</div><div class="kpi-val" style="color:var(--B)">${pln}</div><div class="kpi-sub">Aguardando</div></div>
+  <div class="kpi-cell c-r"><div class="kpi-lbl">Atrasadas</div><div class="kpi-val" style="color:var(--R)">${lat}</div><div class="kpi-sub">Requer Ação</div></div>
+  <div class="kpi-cell"><div class="kpi-lbl">Prioridade 1</div><div class="kpi-val">${p1}</div><div class="kpi-sub">Críticas</div></div>
+`;
+
+// ═══════════════════════ DISCIPLINAS (ponto 9: expandable) ═══════════════════════
+let expandedDisc=null;
+function buildDiscGrid(){
+  document.getElementById('disc-grid').innerHTML=discs.map(d=>{
+    const c=DC[d]||{bg:'#eee',fill:'#888',text:'#333',badge:'#ccc'};
+    const da=ACTS.filter(a=>a.disc===d);
+    const act=da.filter(a=>sta(a)==='ongoing').length;
+    const pl=da.filter(a=>sta(a)==='planned').length;
+    const lt=da.filter(a=>sta(a)==='late').length;
+    const pct=da.length?Math.round(act/da.length*100):0;
+    const isExp=expandedDisc===d;
+    return`<div class="disc-card${isExp?' expanded':''}" style="border-top-color:${c.fill}" onclick="toggleDisc('${d}')">
+      <div class="dc-top"><span class="dc-name">${d}</span><span class="dc-badge" style="background:${c.badge};color:${c.text}">${da.length} ativ.</span></div>
+      <div class="prog-track"><div class="prog-bar" style="width:${pct}%;background:${c.fill}"></div></div>
+      <div class="dc-stats">
+        <span class="dstat" style="color:var(--G)"><span class="dstat-dot" style="background:var(--G)"></span>${act} Andamento</span>
+        <span class="dstat" style="color:var(--B)"><span class="dstat-dot" style="background:var(--B)"></span>${pl} Plan.</span>
+        ${lt?`<span class="dstat" style="color:var(--R)"><span class="dstat-dot" style="background:var(--R)"></span>${lt} Venc.</span>`:''}
+      </div>
+      <div class="dc-expand-hint" style="color:${isExp?'var(--or)':'var(--ink3)'}">${isExp?'▲ Clique para fechar':'▼ Clique para detalhar'}</div>
+    </div>`;
+  }).join('');
+
+  const dc=document.getElementById('disc-detail-container');
+  if(!expandedDisc){dc.innerHTML='';return}
+  const c=DC[expandedDisc]||{bg:'#eee',fill:'#888',text:'#333'};
+  const da=ACTS.filter(a=>a.disc===expandedDisc).sort((a,b)=>a.prio-b.prio);
+  dc.innerHTML=`<div class="disc-detail open">
+    <div class="disc-detail-hdr" style="background:${c.fill};color:#fff">
+      <span>${expandedDisc} — ${da.length} Atividades</span>
+      <span style="font-size:10px;opacity:.75">Ordenado por prioridade</span>
+    </div>
+    <table><thead><tr>
+      <th style="width:26px">P</th><th>Atividade</th>
+      <th style="width:68px">Início</th><th style="width:68px">Término</th>
+      <th style="width:90px">Duração</th><th style="width:110px">⏱ Restam</th>
+      <th style="width:105px">Status</th><th>Grupo</th>
+    </tr></thead><tbody>
+    ${da.map(a=>{
+      const s=sta(a);const dl=dlLabel(a);
+      return`<tr>
+        <td><span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'}">${a.prio||'?'}</span></td>
+        <td style="font-weight:600">${a.ativ}</td>
+        <td class="mono">${fd(a.start)}</td><td class="mono">${fd(a.end)}</td>
+        <td>${durBar(a)}</td>
+        <td style="color:${dl.color};font-size:10px;font-weight:700">${dl.txt}</td>
+        <td><span class="spill" style="background:${SBG[s]};color:${ST[s]}">${SL[s]}</span></td>
+        <td style="color:var(--ink3);font-size:10px">${a.grupo}</td>
+      </tr>`;
+    }).join('')}
+    </tbody></table>
+  </div>`;
+}
+function toggleDisc(d){expandedDisc=expandedDisc===d?null:d;buildDiscGrid()}
+buildDiscGrid();
+
+// ═══════════════════════ ATIVIDADES TABLE ═══════════════════════
+let adf='ALL';
+function rndTable(){
+  const rows=adf==='ALL'?ACTS:ACTS.filter(a=>a.disc===adf);
+  document.getElementById('act-tbody').innerHTML=rows.map(a=>{
+    const s=sta(a);const c=DC[a.disc]||{badge:'#eee',text:'#333'};
+    const dl=dlLabel(a);
+    const restric=a.restric?`<span title="${a.restric}" style="cursor:help;color:var(--or);font-weight:700">⚠ ${a.restric.split(':')[0]}</span>`:'<span style="color:var(--ink3)">—</span>';
+    return`<tr>
+      <td><span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'}">${a.prio||'?'}</span></td>
+      <td><span class="dpill" style="background:${c.badge};color:${c.text}">${a.disc}</span></td>
+      <td style="font-weight:600;min-width:200px">${a.ativ}</td>
+      <td class="mono">${fd(a.start)}</td><td class="mono">${fd(a.end)}</td>
+      <td>${durBar(a)}</td>
+      <td style="color:${dl.color};font-size:10px;font-weight:700;white-space:nowrap">${dl.txt}</td>
+      <td><span class="spill" style="background:${SBG[s]};color:${ST[s]}">${SL[s]}</span></td>
+      <td style="color:var(--ink3);font-size:10px;min-width:100px">${a.grupo}</td>
+      <td style="font-size:10px">${restric}</td>
+    </tr>`;
+  }).join('');
+}
+document.getElementById('flt-bar').innerHTML=
+  '<span class="flt-lbl">Disciplina:</span>'+
+  ['ALL',...discs].map(d=>`<button class="flt-btn${d==='ALL'?' on':''}" onclick="setDF('${d}',this)">${d==='ALL'?'Todas':d}</button>`).join('');
+function setDF(d,b){adf=d;document.querySelectorAll('#flt-bar .flt-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');rndTable()}
+rndTable();
+
+// ═══════════════════════ TIMELINE (ponto 7: seleção de dia) ═══════════════════════
+function buildTimeline(){
+  const selDate=document.getElementById('tl-date-input').value||TODAY_STR;
+  const starts=ACTS.filter(a=>a.start).map(a=>a.start);
+  const ends=ACTS.filter(a=>a.end).map(a=>a.end);
+  const minD=pd(starts.sort()[0]);
+  const maxD=pd(ends.sort().reverse()[0]);
+  const days=[];
+  for(let d=new Date(minD);d<=maxD;d.setDate(d.getDate()+1))
+    days.push(dkStr(d));
+  const months=[];let curMo=null,curMoCnt=0;
+  days.forEach(dk=>{
+    const mo=dk.slice(0,7);
+    if(mo!==curMo){if(curMo)months.push({mo:curMo,cnt:curMoCnt});curMo=mo;curMoCnt=1}else curMoCnt++;
+  });
+  if(curMo)months.push({mo:curMo,cnt:curMoCnt});
+
+  let html=`<table class="tl-table"><thead>
+    <tr>
+      <th class="tl-act-cell" rowspan="2" style="background:var(--dk)">Atividade / Disciplina</th>
+      ${months.map(m=>{const dt=pd(m.mo+'-01');return`<th colspan="${m.cnt}" style="background:var(--or);color:#fff;font-size:10px;padding:6px">${MP[dt.getMonth()]} ${dt.getFullYear()}</th>`}).join('')}
+    </tr>
+    <tr>
+      ${days.map(dk=>{
+        const d=pd(dk);const isT=dk===TODAY_STR;const isSel=dk===selDate;
+        const isWE=d.getDay()===0||d.getDay()===6;
+        let cls=isT?'today-th':isSel?'sel-th':isWE?'wknd-th':'';
+        return`<th class="tl-date-hdr ${cls}">${String(d.getDate()).padStart(2,'0')}</th>`;
+      }).join('')}
+    </tr>
+  </thead><tbody>`;
+
+  const byDisc={};ACTS.forEach(a=>{if(!byDisc[a.disc])byDisc[a.disc]=[];byDisc[a.disc].push(a)});
+  Object.entries(byDisc).forEach(([d,da])=>{
+    const c=DC[d]||{fill:'#888'};
+    html+=`<tr class="tl-disc-hdr"><td colspan="${days.length+1}" style="border-left:5px solid ${c.fill}!important">${d} · ${da.length} atividades</td></tr>`;
+    da.sort((a,b)=>a.prio-b.prio).forEach(a=>{
+      const s=pd(a.start),e=pd(a.end);
+      const stRef=sta(a,selDate);
+      const barColor=stRef==='ongoing'?'var(--G)':stRef==='late'?'var(--R)':'var(--B)';
+      // Check if this activity is active on the selected day
+      const activeOnSel=s&&e&&pd(selDate)>=s&&pd(selDate)<=e;
+      // Dim row if not active on selected day
+      const rowOpacity=activeOnSel?1:0.18;
+      const actCellStyle=activeOnSel?'background:var(--sf2)!important':'background:#F0EFEC!important;color:var(--ink3)!important';
+      html+=`<tr style="opacity:${rowOpacity}"><td class="tl-act-cell" title="${a.ativ}" style="${actCellStyle}">
+        <span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'};width:15px;height:15px;font-size:8px;margin-right:4px">${a.prio||'?'}</span>${a.ativ}
+      </td>`;
+      days.forEach(dk=>{
+        const dc=pd(dk);const isT=dk===TODAY_STR;const isSel=dk===selDate;
+        const isWE=dc.getDay()===0||dc.getDay()===6;
+        const inPlan=s&&e&&dc>=s&&dc<=e;
+        const isSelActive=inPlan&&dk===selDate;
+        let tdCls='';
+        if(isT)tdCls='tl-today-col';
+        else if(isSel)tdCls='tl-sel-col';
+        else if(isWE)tdCls='tl-wknd-col';
+        let inner='';
+        if(inPlan){
+          const isStart=dk===a.start,isEnd=dk===a.end;
+          const br=isStart?'4px 0 0 4px':isEnd?'0 4px 4px 0':'0';
+          const bg=isSelActive?'#FF8C00':barColor;
+          const ht=isSelActive?'18px':'13px';
+          inner=`<div style="background:${bg};height:${ht};border-radius:${br};margin:2px 1px;opacity:${isSelActive?1:.88}"></div>`;
+        }
+        html+=`<td class="${tdCls}" style="padding:2px 0">${inner}</td>`;
+      });
+      html+='</tr>';
+    });
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('tl-wrap').innerHTML=html;
+}
+function resetTlDate(){document.getElementById('tl-date-input').value=TODAY_STR;buildTimeline()}
+
+// ═══════════════════════ SEMANAS ═══════════════════════
+function dkStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+const wkMap={};
+ACTS.forEach(a=>{
+  if(!a.start)return;
+  const sd=pd(a.start),ed=pd(a.end||a.start);
+  for(let d=new Date(sd);d<=ed;d.setDate(d.getDate()+1)){
+    if(d.getDay()===0||d.getDay()===6)continue;
+    const wk=wkKey(dkStr(d));
+    if(!wkMap[wk])wkMap[wk]=[];
+    if(!wkMap[wk].find(x=>x.ativ===a.ativ))wkMap[wk].push(a);
+  }
+});
+const weeks=Object.keys(wkMap).sort().slice(0,10);
+const curWk=wkKey(TODAY_STR);
+document.getElementById('week-grid').innerHTML=weeks.map(wk=>{
+  const wa=wkMap[wk];const isCur=wk===curWk,isPast=pd(wk)<TODAY&&!isCur;
+  const bd={};wa.forEach(a=>{if(!bd[a.disc])bd[a.disc]=[];bd[a.disc].push(a)});
+  return`<div class="wk-card${isCur?' cur':''}${isPast?' past':''}" onclick="openWk('${wk}')">
+    ${isCur?'<div class="wk-cur-tag">● Semana Atual</div>':''}
+    <div class="wk-lbl">${wkLabel(wk)}</div>
+    <div class="wk-count" style="color:${isCur?'var(--or)':'inherit'}">${wa.length}</div>
+    <div class="wk-sub">Atividades Previstas</div>
+    <div class="wk-discs">${Object.entries(bd).map(([d,da])=>{
+      const c=DC[d]||{fill:'#888'};
+      return`<div class="wk-disc-row"><span class="wk-pip" style="background:${c.fill}"></span><span style="color:var(--ink2)">${d}</span><span class="wk-disc-n">${da.length}</span></div>`;
+    }).join('')}</div>
+    <button class="wk-btn">Ver todas as atividades →</button>
+  </div>`;
+}).join('');
+
+// ═══════════════════════ MESES (ponto 8: detalhe completo via modal) ═══════════════════════
+const moMap={};
+ACTS.forEach(a=>{
+  if(!a.start)return;
+  const sd=pd(a.start),ed=pd(a.end||a.start);
+  for(let d=new Date(sd);d<=ed;d.setDate(d.getDate()+1)){
+    const mk=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if(!moMap[mk])moMap[mk]={label:`${MP[d.getMonth()]} ${d.getFullYear()}`,acts:[]};
+    if(!moMap[mk].acts.find(x=>x.ativ===a.ativ))moMap[mk].acts.push(a);
+  }
+});
+const curMk=`${TODAY.getFullYear()}-${String(TODAY.getMonth()+1).padStart(2,'0')}`;
+document.getElementById('mo-grid').innerHTML=Object.keys(moMap).sort().map(mk=>{
+  const m=moMap[mk],isCur=mk===curMk;
+  const bd={};m.acts.forEach(a=>{if(!bd[a.disc])bd[a.disc]=[];bd[a.disc].push(a)});
+  return`<div class="mo-col">
+    <div class="mo-hdr" onclick="openMoModal('${mk}')" title="Clique para ver todas as atividades">
+      <span class="mo-name${isCur?' cur':''}">${isCur?'● ':''} ${m.label}</span>
+      <span class="mo-cnt">${m.acts.length} ativ. 🔍</span>
+    </div>
+    <div class="mo-body">
+      ${Object.entries(bd).map(([d,da])=>{
+        const c=DC[d]||{bg:'#eee',text:'#333'};
+        return`<div class="mo-disc" style="background:${c.bg}">
+          <div class="mo-disc-hdr" style="color:${c.text}">${d} · ${da.length}</div>
+          ${da.map(a=>`<div class="mo-disc-item" style="color:${c.text}">${a.ativ}</div>`).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}).join('');
+
+function openMoModal(mk){
+  const m=moMap[mk];if(!m)return;
+  const isCur=mk===curMk;
+  document.getElementById('mo-mtitle').innerHTML=(isCur?'<span>Mês Atual</span> — ':'')+m.label+' · '+m.acts.length+' atividades';
+  const bd={};m.acts.forEach(a=>{if(!bd[a.disc])bd[a.disc]=[];bd[a.disc].push(a)});
+  const a2=m.acts.filter(a=>sta(a)==='ongoing').length;
+  const p2=m.acts.filter(a=>sta(a)==='planned').length;
+  const l2=m.acts.filter(a=>sta(a)==='late').length;
+  const pp=m.acts.filter(a=>a.prio===1).length;
+  document.getElementById('mo-mkpis').innerHTML=`
+    <div class="mk"><div class="mk-val" style="color:var(--G)">${a2}</div><div class="mk-lbl">Em Andamento</div></div>
+    <div class="mk"><div class="mk-val" style="color:var(--B)">${p2}</div><div class="mk-lbl">Planejadas</div></div>
+    <div class="mk"><div class="mk-val" style="color:var(--R)">${l2}</div><div class="mk-lbl">Atrasadas</div></div>
+    <div class="mk"><div class="mk-val">${pp}</div><div class="mk-lbl">Prioridade 1</div></div>
+  `;
+  let html='';
+  Object.entries(bd).forEach(([d,da])=>{
+    const c=DC[d]||{bg:'#eee',text:'#333'};
+    html+=`<div class="mdsc"><div class="mdsc-hdr" style="background:${c.fill||c.bg};color:#fff"><span>${d}</span><span>${da.length} atividades</span></div>`;
+    da.sort((a,b)=>a.prio-b.prio).forEach(a=>{
+      const s=sta(a);const dl=dlLabel(a);
+      html+=`<div class="mrow">
+        <span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'};flex-shrink:0">${a.prio||'?'}</span>
+        <span class="mrow-name">${a.ativ}</span>
+        <span class="mrow-grupo">${a.grupo}</span>
+        <span class="mrow-dates">${fd(a.start)}→${fd(a.end)}</span>
+        <span style="font-size:9px;font-weight:700;color:${dl.color};white-space:nowrap">${dl.txt}</span>
+        <span class="spill" style="background:${SBG[s]};color:${ST[s]};flex-shrink:0">${SL[s]}</span>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('mo-mbody').innerHTML=html;
+  document.getElementById('mo-mwrap').classList.add('open');
+}
+function closeMoMod(e){if(e.target===document.getElementById('mo-mwrap'))closeMoModDirect()}
+function closeMoModDirect(){document.getElementById('mo-mwrap').classList.remove('open')}
+
+// ═══════════════════════ DIÁRIO (ponto 6: nome Diário, mostra atividades do dia) ═══════════════════════
+const allDayKeys=[...new Set(
+  ACTS.filter(a=>a.start).flatMap(a=>{
+    const days=[];const sd=pd(a.start),ed=pd(a.end||a.start);
+    for(let d=new Date(sd);d<=ed;d.setDate(d.getDate()+1))days.push(dkStr(d));
+    return days;
+  })
+)].sort();
+let curDayIdx=allDayKeys.indexOf(TODAY_STR);if(curDayIdx<0)curDayIdx=0;
+
+function renderDay(){
+  const dk=allDayKeys[curDayIdx];const dt=pd(dk);
+  document.getElementById('day-lbl').textContent=`${DNF[dt.getDay()]}, ${fd(dk,true)}`;
+  document.getElementById('day-prev').disabled=curDayIdx===0;
+  document.getElementById('day-next').disabled=curDayIdx===allDayKeys.length-1;
+  const dayActs=ACTS.filter(a=>{
+    if(!a.start)return false;
+    const sd=pd(a.start),ed=pd(a.end||a.start),dc=pd(dk);
+    return dc>=sd&&dc<=ed;
+  });
+  if(!dayActs.length){document.getElementById('day-body').innerHTML=`<div class="day-empty">Nenhuma atividade prevista para ${fd(dk,true)}</div>`;return}
+  const bd={};dayActs.forEach(a=>{if(!bd[a.disc])bd[a.disc]=[];bd[a.disc].push(a)});
+  let html=`<div style="font-size:11px;color:var(--ink3);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em"><b style="color:var(--ink)">${dayActs.length} atividades</b> previstas para este dia</div>`;
+  html+=`<div class="day-act-list">`;
+  Object.entries(bd).forEach(([d,da])=>{
+    const c=DC[d]||{fill:'#888',bg:'#eee',text:'#333'};
+    da.sort((a,b)=>a.prio-b.prio).forEach(a=>{
+      const s=sta(a,dk);const dl=dlLabel(a,dk);
+      const isStart=a.start===dk,isEnd=a.end===dk;
+      const tag=isStart&&isEnd?'◆ Único dia':isStart?'▶ Início':isEnd?'■ Último dia':'│ Em execução';
+      html+=`<div class="day-act-card ${s}">
+        <span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'};flex-shrink:0">${a.prio||'?'}</span>
+        <span class="day-disc-tag" style="background:${c.bg};color:${c.text}">${d}</span>
+        <div style="flex:1;min-width:0">
+          <div class="day-act-name">${a.ativ}</div>
+          <div class="day-act-grupo">${a.grupo}</div>
+        </div>
+        <span style="font-size:9px;padding:2px 7px;border-radius:4px;background:${c.bg};color:${c.text};white-space:nowrap;font-weight:700">${tag}</span>
+        <span class="day-dur-badge" style="background:var(--sf3);color:var(--ink2)">${a.dur?a.dur+'d total':'—'}</span>
+        <span class="day-remain-badge" style="color:${dl.color};background:var(--sf2)">${dl.txt}</span>
+        <span class="spill" style="background:${SBG[s]};color:${ST[s]}">${SL[s]}</span>
+      </div>`;
+    });
+  });
+  html+=`</div>`;
+  document.getElementById('day-body').innerHTML=html;
+}
+function navDay(dir){curDayIdx=Math.max(0,Math.min(allDayKeys.length-1,curDayIdx+dir));renderDay()}
+renderDay();
+
+// ═══════════════════════ RESTRIÇÕES (ponto 5: só as marcadas) ═══════════════════════
+// Only shows activities where the 'restric' field has content (filled by user in spreadsheet)
+const restrActs=ACTS.filter(a=>a.restric&&a.restric.trim()!==''&&a.restric.trim()!=='-');
+let restrFilter='ALL';
+function renderRestr(){
+  const cats=['ALL','Material','Equipamento','Recurso','Outros'];
+  const counts={};cats.slice(1).forEach(c=>counts[c]=restrActs.filter(a=>getRestrCat(a.restric)===c).length);
+  document.getElementById('restr-bar').innerHTML=
+    '<span class="flt-lbl">Categoria:</span>'+
+    cats.map(c=>`<button class="flt-btn${c===restrFilter?' on':''}" onclick="setRF('${c}',this)">${c==='ALL'?`Todas (${restrActs.length})`:c+' ('+counts[c]+')'}</button>`).join('');
+  const catCounts={Material:0,Equipamento:0,Recurso:0,Outros:0};
+  restrActs.forEach(a=>catCounts[getRestrCat(a.restric)]++);
+  document.getElementById('restr-kpis').innerHTML=Object.entries(catCounts).map(([k,v])=>{
+    const cc=CAT_COLORS[k];
+    return`<div style="background:${cc.bg};color:${cc.color};padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">${k}: <b>${v}</b></div>`;
+  }).join('');
+  const filtered=restrFilter==='ALL'?restrActs:restrActs.filter(a=>getRestrCat(a.restric)===restrFilter);
+  document.getElementById('restr-grid').innerHTML=filtered.map(a=>{
+    const s=sta(a);const cat=getRestrCat(a.restric);const cc=CAT_COLORS[cat];
+    const dc=DC[a.disc]||{badge:'#eee',text:'#333'};const dl=dlLabel(a);
+    return`<div class="restr-card ${cc.cls}">
+      <div class="restr-top">
+        <div class="restr-ativ">${a.ativ}</div>
+        <span class="restr-cat" style="background:${cc.bg};color:${cc.color}">${cat}</span>
+      </div>
+      <div class="restr-txt">⚠ ${a.restric}</div>
+      <div class="restr-meta">
+        <span class="restr-chip" style="background:${dc.badge};color:${dc.text}">${a.disc}</span>
+        <span class="restr-chip" style="background:${SBG[s]};color:${ST[s]}">${SL[s]}</span>
+        <span>${fd(a.start,true)} → ${fd(a.end,true)}</span>
+        <span style="color:${dl.color};font-weight:700">${dl.txt}</span>
+      </div>
+    </div>`;
+  }).join('');
+  if(!filtered.length)document.getElementById('restr-grid').innerHTML=`<div style="padding:2rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;font-size:12px">Nenhuma restrição nesta categoria.</div>`;
+}
+function setRF(c,b){restrFilter=c;document.querySelectorAll('#restr-bar .flt-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderRestr()}
+renderRestr();
+
+// ═══════════════════════ WHATSAPP (ponto 1: seleção de dia) ═══════════════════════
+function buildWaText(){
+  const dk=document.getElementById('wa-date-input').value||TODAY_STR;
+  const dt=pd(dk);
+  const dateLabel=`${DNF[dt.getDay()]}, ${fd(dk,true)}`;
+  document.getElementById('wa-date-title').textContent=dateLabel;
+  const dayActs=ACTS.filter(a=>{
+    if(!a.start)return false;
+    const sd=pd(a.start),ed=pd(a.end||a.start),dc=pd(dk);
+    return dc>=sd&&dc<=ed;
+  });
+  const ORDER=['CIVIL','EMEC','ELÉTRICA','COMISSIO.','ENERGIZAÇÃO'];
+  let txt=`*Atividades previstas — ${dateLabel}*\n`;
+  txt+=`*SE 500 kV Ponta Grossa — ANANAI*\n`;
+  txt+=`─────────────────────────────\n`;
+  let counter=1;
+  ORDER.forEach(disc=>{
+    const da=dayActs.filter(a=>a.disc===disc);if(!da.length)return;
+    txt+=`\n*${disc}*\n`;
+    da.sort((a,b)=>a.prio-b.prio).forEach(a=>{txt+=`${counter}) ${a.ativ} — ${a.grupo}\n`;counter++});
+  });
+  txt+=`─────────────────────────────\n`;
+  txt+=`Total: ${dayActs.length} atividades previstas.\n`;
+  txt+=`_Engetecnica Engenharia e Construção_`;
+  document.getElementById('wa-content').textContent=txt;
+}
+function copyWa(){
+  navigator.clipboard.writeText(document.getElementById('wa-content').textContent).then(()=>{
+    const btn=document.querySelector('.wa-copy-btn');btn.textContent='✅ Copiado!';
+    setTimeout(()=>btn.textContent='📋 Copiar para WhatsApp',2200);
+  });
+}
+buildWaText();
+
+// ═══════════════════════ WEEK MODAL ═══════════════════════
+function openWk(wk){
+  const wa=wkMap[wk]||[],isCur=wk===curWk;
+  document.getElementById('mtitle').innerHTML=(isCur?'<span>Semana Atual</span> — ':'')+wkLabel(wk)+' · '+wa.length+' atividades';
+  const a2=wa.filter(a=>sta(a)==='ongoing').length,p2=wa.filter(a=>sta(a)==='planned').length,l2=wa.filter(a=>sta(a)==='late').length,pp=wa.filter(a=>a.prio===1).length;
+  document.getElementById('mkpis').innerHTML=`
+    <div class="mk"><div class="mk-val" style="color:var(--G)">${a2}</div><div class="mk-lbl">Em Andamento</div></div>
+    <div class="mk"><div class="mk-val" style="color:var(--B)">${p2}</div><div class="mk-lbl">Planejadas</div></div>
+    <div class="mk"><div class="mk-val" style="color:var(--R)">${l2}</div><div class="mk-lbl">Atrasadas</div></div>
+    <div class="mk"><div class="mk-val">${pp}</div><div class="mk-lbl">Prioridade 1</div></div>
+  `;
+  const bd={};wa.forEach(a=>{if(!bd[a.disc])bd[a.disc]=[];bd[a.disc].push(a)});
+  let html='';
+  Object.entries(bd).forEach(([d,da])=>{
+    const c=DC[d]||{bg:'#eee',text:'#333'};
+    html+=`<div class="mdsc"><div class="mdsc-hdr" style="background:${c.fill||c.bg};color:#fff"><span>${d}</span><span>${da.length} atividades</span></div>`;
+    da.sort((a,b)=>a.prio-b.prio).forEach(a=>{
+      const s=sta(a);const dl=dlLabel(a);
+      html+=`<div class="mrow">
+        <span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'};flex-shrink:0">${a.prio||'?'}</span>
+        <span class="mrow-name">${a.ativ}</span>
+        <span class="mrow-grupo">${a.grupo}</span>
+        <span class="mrow-dates">${fd(a.start)}→${fd(a.end)}</span>
+        <span style="font-size:9px;font-weight:700;color:${dl.color};white-space:nowrap">${dl.txt}</span>
+        <span class="spill" style="background:${SBG[s]};color:${ST[s]};flex-shrink:0">${SL[s]}</span>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('mbody').innerHTML=html;
+  document.getElementById('mwrap').classList.add('open');
+}
+function closeMod(e){if(e.target===document.getElementById('mwrap'))closeModDirect()}
+function closeModDirect(){document.getElementById('mwrap').classList.remove('open')}
+
+// ═══════════════════════ LEGEND ═══════════════════════
+document.getElementById('legend-bar').innerHTML=
+  '<span class="leg-ttl">Prioridade</span>'+
+  '<div class="leg-sect">'+[1,2,3,4].map(p=>`<span class="leg-item"><span class="leg-sq" style="background:${PC[p]}"></span>${p}</span>`).join('')+'</div>'+
+  '<span class="leg-ttl" style="margin-left:12px">Status</span>'+
+  '<div class="leg-sect">'+Object.entries(SFC).map(([k,v])=>`<span class="leg-item"><span class="leg-dot" style="background:${v}"></span>${SL[k]}</span>`).join('')+'</div>'+
+  '<span class="leg-ttl" style="margin-left:12px">Restrição</span>'+
+  '<div class="leg-sect">'+Object.entries(CAT_COLORS).map(([k,v])=>`<span class="leg-item"><span class="leg-sq" style="background:${v.bg};border:1px solid rgba(0,0,0,.15)"></span>${k}</span>`).join('')+'</div>';
+
+// ═══════════════════════ TAB SWITCH + PRINT ═══════════════════════
+let tlBuilt=false;
+let activeTabId='disciplinas';
+
+function swTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  activeTabId=id;
+  if(id==='timeline'&&!tlBuilt){tlBuilt=true;buildTimeline()}
+}
+
+// ── Extract CSS directly from <style> tags (reliable, no CORS issues) ──
+function getInlineCSS(){
+  let css='';
+  document.querySelectorAll('style').forEach(s=>{css+=s.textContent+'\n';});
+  return css;
+}
+
+// ── Resolve CSS custom properties to fixed hex values for the print window ──
+function getCSSVarOverrides(){
+  const s=getComputedStyle(document.documentElement);
+  const vars=['--or','--or2','--or-pale','--or-mid','--dk','--dk2',
+    '--ink','--ink2','--ink3','--rule','--rule2',
+    '--sf','--sf2','--sf3','--r','--rlg',
+    '--G','--Gbg','--Gtx','--B','--Bbg','--Btx',
+    '--R','--Rbg','--Rtx','--Y','--Ybg','--Ytx','--Gr','--Grbg','--Grtx'];
+  let out=':root{';
+  vars.forEach(v=>{const val=s.getPropertyValue(v).trim();if(val)out+=v+':'+val+';';});
+  out+='}';
+  return out;
+}
+
+// ── Build full print-ready HTML ──
+function buildPrintHTML(lbl,kpisHTML,contentHTML){
+  const inlineCSS=getInlineCSS();
+  const varCSS=getCSSVarOverrides();
+  return '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n'+
+  '<meta charset="UTF-8">\n'+
+  '<title>Impressao - '+lbl+' - SE 500 kV ANANAI</title>\n'+
+  '<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">\n'+
+  '<style>\n'+
+  varCSS+'\n'+
+  inlineCSS+'\n'+
+  '*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}\n'+
+  '@page{size:A3 landscape;margin:10mm}\n'+
+  'html,body{background:#ffffff!important;font-family:\'Sora\',sans-serif!important}\n'+
+  '.shell{max-width:100%!important;padding:0!important}\n'+
+  '.tab-bar,.topbar,.footer,.legend-bar,.wa-box,.mwrap,'+
+  '.ptoolbar,.flt-bar,.day-nav,.restr-filter-bar,.print-btn,.day-nav-btn,.stitle{display:none!important}\n'+
+  '.tl-wrap,.tbl-wrap{overflow:visible!important;max-width:none!important}\n'+
+  '.mo-body{overflow:visible!important;max-height:none!important}\n'+
+  '.modal-body{max-height:none!important;overflow:visible!important;padding:0!important}\n'+
+  '.kpi-strip{display:grid!important;grid-template-columns:repeat(5,1fr)!important;margin-bottom:14px!important}\n'+
+  '.disc-grid{grid-template-columns:repeat(5,1fr)!important}\n'+
+  '.mo-grid{grid-template-columns:repeat(3,1fr)!important}\n'+
+  '.week-grid{grid-template-columns:repeat(4,1fr)!important}\n'+
+  '.restr-grid{grid-template-columns:repeat(2,1fr)!important}\n'+
+  '.disc-detail{display:block!important}\n'+
+  'table{border-collapse:collapse!important;width:100%!important;page-break-inside:auto!important}\n'+
+  'tr{page-break-inside:avoid!important}\n'+
+  'thead{display:table-header-group!important}\n'+
+  '.disc-card,.wk-card,.mo-col,.restr-card,.day-act-card,.mrow{page-break-inside:avoid!important}\n'+
+  '[style*="background"]{-webkit-print-color-adjust:exact!important}\n'+
+  '</style>\n</head>\n<body>\n'+
+  '<div style="display:flex;align-items:flex-start;justify-content:space-between;border-bottom:3px solid #E8560A;padding-bottom:8px;margin-bottom:14px">\n'+
+  '  <div>\n'+
+  '    <div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:#E8560A;text-transform:uppercase;margin-bottom:3px">CRO \xb7 Plano de A\xe7\xe3o \xb7 Engetecnica Engenharia e Constru\xe7\xe3o</div>\n'+
+  '    <div style="font-size:18px;font-weight:700;color:#0F0F0E">SE 500 kV Ponta Grossa \u2014 ANANAI</div>\n'+
+  '    <div style="font-size:10px;color:#6A6A66;margin-top:3px;text-transform:uppercase;letter-spacing:.06em">Aba: <b style="color:#E8560A">'+lbl+'</b></div>\n'+
+  '  </div>\n'+
+  '  <div style="text-align:right;font-size:10px;color:#6A6A66;font-weight:700">Emiss\xe3o: 18/05/2026</div>\n'+
+  '</div>\n'+
+  kpisHTML+'\n'+
+  '<div style="margin-top:12px">'+contentHTML+'</div>\n'+
+  '<script>document.fonts.ready.then(function(){setTimeout(function(){window.print();},400);});<\/script>\n'+
+  '</body>\n</html>';
+}
+
+// ── Print active TAB ──
+function printTab(){
+  const tabLabels={
+    disciplinas:'Disciplinas',atividades:'Atividades',timeline:'Timeline',
+    semanas:'Por Semana',meses:'Por Mes',diario:'Diario',restricoes:'Restricoes'
+  };
+  const lbl=tabLabels[activeTabId]||activeTabId;
+  const panelEl=document.getElementById(activeTabId);
+  if(!panelEl)return;
+  const clone=panelEl.cloneNode(true);
+  clone.querySelectorAll('.print-btn,.ptoolbar,.day-nav-btn,.stitle').forEach(function(el){el.remove();});
+  const panelHTML=clone.innerHTML;
+  const kpisHTML=document.getElementById('kpis').outerHTML;
+  const html=buildPrintHTML(lbl,kpisHTML,panelHTML);
+  const pw=window.open('','_blank','width=1400,height=900');
+  if(!pw){alert('Pop-up bloqueado. Permita pop-ups para este site e tente novamente.');return;}
+  pw.document.open();
+  pw.document.write(html);
+  pw.document.close();
+}
+
+// ── Print MODAL content ──
+function printModal(modalId){
+  const isWeek=modalId==='mwrap';
+  const titleEl=document.getElementById(isWeek?'mtitle':'mo-mtitle');
+  const kpisEl =document.getElementById(isWeek?'mkpis':'mo-mkpis');
+  const bodyEl =document.getElementById(isWeek?'mbody':'mo-mbody');
+  const title  =titleEl?titleEl.textContent:'';
+  const kpisHTML=kpisEl?kpisEl.outerHTML:'';
+  const bodyHTML=bodyEl?bodyEl.innerHTML:'';
+  const html=buildPrintHTML(title,kpisHTML,'<div class="modal-body" style="padding:0">'+bodyHTML+'</div>');
+  const pw=window.open('','_blank','width=1400,height=900');
+  if(!pw){alert('Pop-up bloqueado. Permita pop-ups para este site e tente novamente.');return;}
+  pw.document.open();
+  pw.document.write(html);
+  pw.document.close();
+}
+</script>
+</body>
+</html>
