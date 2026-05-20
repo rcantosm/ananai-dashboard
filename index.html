@@ -254,7 +254,34 @@ tr:hover td{background:var(--sf2)!important}
 .footer{background:var(--dk);color:rgba(255,255,255,.3);text-align:center;font-size:11px;padding:14px;letter-spacing:.06em;text-transform:uppercase}
 .footer b{color:var(--or2);font-weight:600}
 
-/* PRINT — handled via new window (printTab/printModal), minimal rules here */
+/* WEATHER BAR — compact */
+.weather-bar{display:flex;gap:4px;align-items:stretch;margin-bottom:12px;flex-wrap:nowrap;overflow-x:auto}
+.weather-bar.loading{padding:8px 0;color:var(--ink3);font-size:11px;font-style:italic}
+.weather-bar.error{padding:8px 0;color:var(--R);font-size:11px}
+.wth-day{background:var(--sf);border:1px solid var(--rule2);border-radius:var(--r);padding:6px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:58px;cursor:default}
+.wth-day.today{border-color:var(--or);background:var(--or-pale)}
+.wth-day.rain-warn{border-color:var(--B)}
+.wth-date-lbl{font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.wth-date-lbl.today{color:var(--or)}
+.wth-icon-lg{font-size:22px;line-height:1}
+.wth-mm{font-size:11px;font-weight:700;color:var(--B)}
+.wth-mm.dry{color:var(--ink3);font-weight:400}
+.wth-alert-dot{width:7px;height:7px;border-radius:50%;background:var(--R);flex-shrink:0}
+
+/* CALENDAR */
+.cal-grid-wrap{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
+.cal-dow{text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;padding:6px 0}
+.cal-cell{min-height:80px;background:var(--sf);border:1px solid var(--rule2);border-radius:var(--r);padding:6px 7px;vertical-align:top;position:relative}
+.cal-cell.today{border:2px solid var(--or);background:var(--or-pale)}
+.cal-cell.other-month{background:var(--sf3);opacity:.4;min-height:40px}
+.cal-cell.weekend{background:var(--sf2)}
+.cal-day-num{font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:5px;display:flex;align-items:center;justify-content:space-between}
+.cal-day-num.today-num{color:var(--or)}
+.cal-act-pill{font-size:10px;font-weight:600;padding:3px 7px;border-radius:5px;margin-bottom:3px;line-height:1.4;display:flex;align-items:flex-start;justify-content:space-between;gap:4px}
+.cal-act-name{flex:1;word-break:break-word;line-height:1.4}
+.cal-days-badge{font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;padding:1px 5px;border-radius:4px;align-self:flex-start;margin-top:1px}
+
+/* PRINT */
 @media print{
   @page{size:A3 landscape;margin:10mm}
   body{background:#fff!important}
@@ -264,7 +291,6 @@ tr:hover td{background:var(--sf2)!important}
   .panel.print-active{display:block!important}
   .shell{padding:0!important;max-width:100%!important}
   .kpi-strip{display:grid!important}
-  .proj-hdr{display:flex!important}
   .tl-wrap,.tbl-wrap,.mo-body{overflow:visible!important;max-height:none!important}
 }
 .print-hdr{display:none}
@@ -286,7 +312,7 @@ tr:hover td{background:var(--sf2)!important}
     <div class="proj-name">SE 500 kV Ponta Grossa — ANANAI</div>
     <div class="proj-sub">Atividades por disciplina · Civil · EMEC · Elétrica · Comissionamento · Energização</div>
   </div>
-  <div><div class="proj-date-lbl">Atualizado em</div><div class="proj-date-val">18 / 05 / 2026</div></div>
+  <div><div class="proj-date-lbl">Atualizado em</div><div class="proj-date-val" id="proj-date-val">—</div></div>
 </div>
 
 <div class="kpi-strip" id="kpis"></div>
@@ -300,6 +326,7 @@ tr:hover td{background:var(--sf2)!important}
   <button class="tab" onclick="swTab('meses',this)">Por Mês</button>
   <button class="tab" onclick="swTab('diario',this)">📅 Diário</button>
   <button class="tab" onclick="swTab('restricoes',this)">⚠️ Restrições</button>
+  <button class="tab" onclick="swTab('calendario',this)">📆 Calendário</button>
 </div>
 
 <!-- DISCIPLINAS -->
@@ -338,7 +365,7 @@ tr:hover td{background:var(--sf2)!important}
       <div class="stitle" style="margin-bottom:0;flex:none">Timeline — Previsto por atividade</div>
       <div style="display:flex;align-items:center;gap:8px">
         <span style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em">Dia selecionado:</span>
-        <input type="date" id="tl-date-input" value="2026-05-18" style="font-family:'Sora',sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);color:var(--ink);cursor:pointer" onchange="buildTimeline()">
+        <input type="date" id="tl-date-input" style="font-family:'Sora',sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);color:var(--ink);cursor:pointer" onchange="buildTimeline()">
         <button onclick="resetTlDate()" style="font-family:'Sora',sans-serif;font-size:10px;font-weight:700;padding:5px 10px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);cursor:pointer;color:var(--or);text-transform:uppercase;letter-spacing:.04em">Hoje</button>
       </div>
     </div>
@@ -358,6 +385,7 @@ tr:hover td{background:var(--sf2)!important}
 <!-- SEMANAS -->
 <div id="semanas" class="panel">
   <div class="ptoolbar"><div class="stitle" style="flex:1">Atividades por semana — clique para ver detalhamento</div><button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button></div>
+  <div id="weather-bar-semanas" class="weather-bar"></div>
   <div class="week-grid" id="week-grid"></div>
 </div>
 
@@ -377,6 +405,7 @@ tr:hover td{background:var(--sf2)!important}
     </div>
     <button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button>
   </div>
+  <div id="weather-bar-diario" class="weather-bar"></div>
   <div id="day-body"></div>
 </div>
 
@@ -386,17 +415,39 @@ tr:hover td{background:var(--sf2)!important}
   <div id="restr-kpis" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap"></div>
   <div class="restr-grid" id="restr-grid"></div>
 </div>
-
-</div><!-- /shell -->
-
-<!-- WHATSAPP BOX -->
+<!-- CALENDÁRIO DE VENCIMENTOS -->
+<div id="calendario" class="panel">
+  <div class="ptoolbar">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div class="stitle" style="margin-bottom:0;flex:none">Calendário de vencimentos — data de término das atividades</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="flt-btn" id="cal-prev" onclick="navCal(-1)">← Mês anterior</button>
+        <span id="cal-lbl" style="font-size:13px;font-weight:700;color:var(--or);min-width:160px;text-align:center;text-transform:uppercase;letter-spacing:.04em"></span>
+        <button class="flt-btn" id="cal-next" onclick="navCal(1)">Próximo mês →</button>
+      </div>
+    </div>
+    <button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button>
+  </div>
+  <!-- Legend -->
+  <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;align-items:center">
+    <span style="font-weight:700;color:var(--ink3);font-size:10px;text-transform:uppercase;letter-spacing:.08em">Legenda:</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:var(--R);display:inline-block"></span> Vence hoje ou atrasado</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:#FF8C00;display:inline-block"></span> Vence em até 3 dias</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:var(--Y);display:inline-block"></span> Vence em 4–7 dias</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:var(--G);display:inline-block"></span> Vence em 8+ dias</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:var(--B);display:inline-block"></span> Futuro (não iniciou)</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:var(--Grbg);display:inline-block"></span> Concluída</span>
+  </div>
+  <div id="weather-bar-calendario" class="weather-bar"></div>
+  <div id="cal-grid"></div>
+</div>
 <div style="max-width:1440px;margin:0 auto;padding:0 2rem 2rem">
   <div class="wa-box">
     <div class="wa-hdr">
       <div class="wa-hdr-title">📱 Atividades previstas — <span id="wa-date-title"></span></div>
       <div class="wa-date-ctrl">
         <span style="font-size:10px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Selecionar dia:</span>
-        <input type="date" id="wa-date-input" class="wa-date-input" value="2026-05-18" onchange="buildWaText()">
+        <input type="date" id="wa-date-input" class="wa-date-input" onchange="buildWaText()">
         <button class="wa-copy-btn" onclick="copyWa()">📋 Copiar para WhatsApp</button>
       </div>
     </div>
@@ -452,16 +503,33 @@ tr:hover td{background:var(--sf2)!important}
 
 <script>
 // ═══════════════════════ DATA ═══════════════════════
-const ACTS = [{"disc": "CIVIL", "prio": 1, "ativ": "Civil - Drenagem Porosa", "grupo": "Drenagem", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Dissipador 1", "grupo": "Drenagem", "start": "2026-06-15", "end": "2026-06-19", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Escada [Dissipador 2]", "grupo": "Drenagem", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Dissipador 2", "grupo": "Drenagem", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Escada [Dissipador 3]", "grupo": "Drenagem", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Dissipador 3", "grupo": "Drenagem", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Meia Cana", "grupo": "Drenagem", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Bacia de Infiltra\u00e7\u00e3o", "grupo": "Drenagem", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Britamento Bacia - Reatores", "grupo": "Reatores", "start": "2026-05-18", "end": "2026-05-20", "dur": 3, "restric": "Material: brita dispon\u00edvel", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Casa de Comando - Placas e Extintores", "grupo": "Casa de Comando", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "Material: extintores e placas de sinaliza\u00e7\u00e3o", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Casa de Comando - Rampa/Escada", "grupo": "Casa de Comando", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Casa de Comando - SPDA Externo", "grupo": "Casa de Comando", "start": "2026-05-20", "end": "2026-05-29", "dur": 10, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Casa de Comando - Po\u00e7o Artesiano", "grupo": "Casa de Comando", "start": "2026-05-19", "end": "2026-06-07", "dur": 20, "restric": "Equipamento: perfuratriz aprovada", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Funda\u00e7\u00e3o do Cub\u00edculo", "grupo": "Cub\u00edculo", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Britamento de P\u00e1tio", "grupo": "Britamento", "start": "2026-05-18", "end": "2026-05-29", "dur": 12, "restric": "Equipamento: britadeira m\u00f3vel", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Grama", "grupo": "Grama", "start": "2026-05-18", "end": "2026-06-06", "dur": 20, "restric": "Material: muda de grama", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Cerca de Neutro", "grupo": "Cerca Neutro", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "Material: mour\u00f5es e arame", "progress": {}}, {"disc": "CIVIL", "prio": 3, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Abrigo Inc\u00eandio P\u00e1tio", "grupo": "Abrigo Inc\u00eandio", "start": "2026-05-18", "end": "2026-06-05", "dur": 19, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Via Pavimentada - Terraplanagem", "grupo": "Pavimenta\u00e7\u00e3o", "start": "2026-05-21", "end": "2026-06-05", "dur": 16, "restric": "Recurso: operador de motoniveladora", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Via Pavimentada - Meio Fio", "grupo": "Pavimenta\u00e7\u00e3o", "start": "2026-05-22", "end": "2026-06-06", "dur": 16, "restric": "Material: meio-fio", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Via Pavimentada - Blocos Intertravados", "grupo": "Pavimenta\u00e7\u00e3o", "start": "2026-05-25", "end": "2026-07-10", "dur": 46, "restric": "Material: blocos de concreto intertravado", "progress": {}}, {"disc": "CIVIL", "prio": 1, "ativ": "Civil - Urbaniza\u00e7\u00e3o - Solo Grampeado", "grupo": "Solo Grampeado", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "ativ": "Civil - Estacionamento (\u00c1rea da ENGIE)", "grupo": "Estacionamento", "start": "2026-06-22", "end": "2026-07-10", "dur": 19, "restric": "Outros: aprova\u00e7\u00e3o ENGIE", "progress": {}}, {"disc": "CIVIL", "prio": 2, "ativ": "Civil - Cerca Limite e Port\u00e3o (ENGIE)", "grupo": "Estacionamento", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "Material: port\u00e3o e mour\u00f5es", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Instala\u00e7\u00f5es El\u00e9tricas Casa de Comando", "grupo": "Casa de Comando", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Ar Condicionado + Automatismo", "grupo": "Casa de Comando", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "restric": "Equipamento: unidades de AR Split", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Eletrocalha Casa de Comando", "grupo": "Casa de Comando", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "Material: eletrocalhas e suportes", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Infra CFTV + Instala\u00e7\u00e3o das C\u00e2meras", "grupo": "Casa de Comando", "start": "2026-05-21", "end": "2026-05-30", "dur": 10, "restric": "Material: c\u00e2meras e cabos CFTV", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Infra Controle de Acesso + Equipamentos", "grupo": "Casa de Comando", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "restric": "Equipamento: leitores biom\u00e9tricos", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Infra Prote\u00e7\u00e3o Inc\u00eandio + Sensores", "grupo": "Casa de Comando", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "restric": "Material: detectores de fuma\u00e7a", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Jumper P\u00f3rtico Eixo A \u2013 C2", "grupo": "Barramento Flex\u00edvel", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Barramento de Neutro", "grupo": "Barramento R\u00edgido", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Jumper Barra B1 \u2013 Eixo 17", "grupo": "Barramento Flex\u00edvel", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Jumper Barra B2 \u2013 Eixo 17", "grupo": "Barramento Flex\u00edvel", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Interliga\u00e7\u00e3o PR/REATOR - C2", "grupo": "Barramento Equipamentos", "start": "2026-05-18", "end": "2026-05-29", "dur": 12, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Blindagem Coluna SPDA \u2013 Eixo E/24", "grupo": "Blindagem", "start": "2026-05-21", "end": "2026-05-21", "dur": 1, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Blindagem Eixo 17 \u2013 Barra B1", "grupo": "Blindagem", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Blindagem Colunas Existentes \u2013 Barra B1", "grupo": "Blindagem", "start": "2026-06-06", "end": "2026-06-07", "dur": 2, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Malha de Aterramento - Rabichos", "grupo": "Malha de Aterramento", "start": "2026-05-18", "end": "2026-05-30", "dur": 13, "restric": "Material: cabos de aterramento", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Encaminhamento Casa Comando \u2192 CUB", "grupo": "Encaminhamento", "start": "2026-05-18", "end": "2026-05-27", "dur": 10, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Encaminhamento TSA", "grupo": "Encaminhamento", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Encaminhamento CFTV [P\u00f3rtico]", "grupo": "Encaminhamento", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Encaminhamento Ilumina\u00e7\u00e3o [P\u00f3rtico]", "grupo": "Encaminhamento", "start": "2026-05-25", "end": "2026-06-05", "dur": 12, "restric": "Material: luminar\u00edas de p\u00f3rtico", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Encaminhamento OPGW", "grupo": "Encaminhamento", "start": "2026-05-18", "end": "2026-05-20", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "ativ": "EMEC - Encaminhamento OPLAT", "grupo": "Encaminhamento", "start": "2026-05-18", "end": "2026-06-03", "dur": 17, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "ativ": "EMEC - Encaminhamento Interliga\u00e7\u00e3o ENGIE", "grupo": "Encaminhamento", "start": "2026-05-20", "end": "2026-05-22", "dur": 3, "restric": "Outros: alinhamento com equipe ENGIE", "progress": {}}, {"disc": "EMEC", "prio": 3, "ativ": "EMEC - Encaminhamento TPC Barra 1/2", "grupo": "Encaminhamento", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 1, "ativ": "ELE - Lan\u00e7amento de Cabos - C1", "grupo": "Lan\u00e7amento Cabos C1", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "Material: cabos de controle C1", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o Painel SPCS - C1", "grupo": "Interliga\u00e7\u00e3o Cabos C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o P\u00e1tio Equipamentos - C1", "grupo": "Interliga\u00e7\u00e3o Cabos C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 1, "ativ": "ELE - Lan\u00e7amento de Cabos - C2", "grupo": "Lan\u00e7amento Cabos C2", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "Material: cabos de controle C2", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o Painel SPCS - C2", "grupo": "Interliga\u00e7\u00e3o Cabos C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o P\u00e1tio Equipamentos - C2", "grupo": "Interliga\u00e7\u00e3o Cabos C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 1, "ativ": "ELE - Lan\u00e7amento de Cabos - Interface", "grupo": "Lan\u00e7amento Cabos Interface", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "Material: cabos interface", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o Sala de Rel\u00e9s - Interface", "grupo": "Interliga\u00e7\u00e3o Cabos Interface", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Interliga\u00e7\u00e3o Equipamentos - Interface", "grupo": "Interliga\u00e7\u00e3o Cabos Interface", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 1, "ativ": "ELE - CFTV", "grupo": "CFTV", "start": "2026-05-25", "end": "2026-05-26", "dur": 2, "restric": "", "progress": {}}, {"disc": "EL\u00c9TRICA", "prio": 2, "ativ": "ELE - Ilumina\u00e7\u00e3o P\u00e1tio/Reator", "grupo": "Ilumina\u00e7\u00e3o Reator", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "Material: luminar\u00edas de p\u00e1tio", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - N0 Cabos - C1", "grupo": "Comissionamento Cabos C1", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - N0 Cabos - C2", "grupo": "Comissionamento Cabos C2", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 2, "ativ": "COMISSIONAMENTO - N0 Cabos - Interface", "grupo": "Comissionamento Cabos Interface", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - Equipamentos SECC - C2", "grupo": "Comissionamento SECC C2", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - Malha Principal", "grupo": "Comissionamento Malha", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - Malha - Rabichos", "grupo": "Comissionamento Rabichos", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 2, "ativ": "COMISSIONAMENTO - TSA", "grupo": "Comissionamento S.A.", "start": "2026-05-27", "end": "2026-05-29", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 2, "ativ": "COMISSIONAMENTO - Cub\u00edculo", "grupo": "Comissionamento S.A.", "start": "2026-05-25", "end": "2026-05-28", "dur": 4, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "In\u00edcio do Comissionamento", "grupo": "In\u00edcio Comissionamento", "start": "2026-05-19", "end": "2026-05-19", "dur": 1, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 1, "ativ": "COMISSIONAMENTO - SPCS - C1", "grupo": "Comissionamento SPCS C1", "start": "2026-05-19", "end": "2026-05-29", "dur": 11, "restric": "Recurso: engenheiro de comissionamento", "progress": {}}, {"disc": "COMISSIO.", "prio": 2, "ativ": "COMISSIONAMENTO - SPCS - C2", "grupo": "Comissionamento SPCS C2", "start": "2026-06-01", "end": "2026-06-12", "dur": 12, "restric": "", "progress": {}}, {"disc": "COMISSIO.", "prio": 3, "ativ": "COMISSIONAMENTO - SPCS - Interface", "grupo": "Comissionamento SPCS Interface", "start": "2026-06-15", "end": "2026-06-26", "dur": 12, "restric": "", "progress": {}}, {"disc": "ENERGIZA\u00c7\u00c3O", "prio": 1, "ativ": "Desligamento - Integra\u00e7\u00e3o Cub\u00edculo", "grupo": "Integra\u00e7\u00e3o Cub\u00edculo", "start": "2026-05-30", "end": "2026-05-31", "dur": 2, "restric": "Outros: aprova\u00e7\u00e3o ONS e janela de desligamento", "progress": {}}, {"disc": "ENERGIZA\u00c7\u00c3O", "prio": 1, "ativ": "Desligamento - Integra\u00e7\u00e3o Barra B2", "grupo": "Integra\u00e7\u00e3o Barra B2", "start": null, "end": null, "dur": null, "restric": "Outros: data a definir com ONS", "progress": {}}, {"disc": "ENERGIZA\u00c7\u00c3O", "prio": 1, "ativ": "Desligamento - Integra\u00e7\u00e3o Barra B1", "grupo": "Integra\u00e7\u00e3o Barra B1", "start": "2026-07-07", "end": "2026-07-08", "dur": 2, "restric": "Outros: aprova\u00e7\u00e3o ONS", "progress": {}}, {"disc": "ENERGIZA\u00c7\u00c3O", "prio": 0, "ativ": "Energiza\u00e7\u00e3o", "grupo": "Energiza\u00e7\u00e3o", "start": "2026-07-10", "end": "2026-07-10", "dur": 1, "restric": "Outros: aprova\u00e7\u00e3o ONS e ANEEL", "progress": {}}];
+const ACTS = [{"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Drenagem Porosa", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Dissipador 1", "start": "2026-06-15", "end": "2026-06-19", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Escada [Dissipador 2]", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "restric": "Material: Pedra/Gaiola", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Dissipador 2", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Drenagem", "ativ": "Civil - Escada [Dissipador 3]", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "restric": "Material: Pedra/Gaiola", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Drenagem", "ativ": "Civil - Dissipador 3", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Drenagem", "ativ": "Civil - Meia Cana", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Drenagem", "ativ": "Civil - Bacia de Infiltração", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "restric": "Equipamento: Escavadeira", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Reatores", "ativ": "Civil - Britamento Bacia - Reatores", "start": null, "end": "2026-05-20", "dur": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Instalação de placas e extintores", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Acesso a Casa de Comando [Rampa/Escada]", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - SPDA Externo", "start": "2026-05-20", "end": "2026-05-29", "dur": 10, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Abastecimento de Água [Poço Artesiano]", "start": "2026-05-19", "end": "2026-06-07", "dur": 20, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Cubículo", "ativ": "Civil - Fundação do Cubículo", "start": null, "end": "2026-05-23", "dur": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Britamento", "ativ": "Civil - Urbanização - Britamento de Pátio (Escopo ANANAI)", "start": null, "end": "2026-05-29", "dur": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Grama", "ativ": "Civil - Urbanização - Grama", "start": null, "end": "2026-06-06", "dur": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Cerca Neutro", "ativ": "Civil - Urbanização - Cerca de Neutro", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 3, "grupo": "Abrigo Incêndio", "ativ": "Civil - Urbanização - Abrigo Incêndio Pátio", "start": null, "end": "2026-06-05", "dur": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Terraplanagem (Pedra)", "start": "2026-05-21", "end": "2026-06-05", "dur": 16, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Meio Fio", "start": "2026-05-22", "end": "2026-06-06", "dur": 16, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Blocos intertravados", "start": "2026-05-25", "end": "2026-06-30", "dur": 37, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Solo Grampeado", "ativ": "Civil - Urbanização - Solo Grampeado", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Estacionamento", "ativ": "Civil - Urbanização - Estacionamento (Área da ENGIE)", "start": "2026-06-22", "end": "2026-07-10", "dur": 19, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Estacionamento", "ativ": "Civil - Urbanização - Instalação de Cerca limite e Portão (Área da ENGIE)", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Instalações Elétricas [Iluminação e Tomadas]", "start": null, "end": "2026-05-22", "dur": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Ar condicionado + Automatismo", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Instalação Eletrocalha casa de Comando", "start": null, "end": "2026-05-23", "dur": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra CFTV + Instalação das Câmeras", "start": "2026-05-21", "end": "2026-05-30", "dur": 10, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra Controle de acesso + Equipamentos", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra Proteção Incêndio + sensores", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper Pórtico Eixo A – C2", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Rígido", "ativ": "EMEC - Barramento Rígido - Instalação de Barramento de Neutro", "start": null, "end": "2026-05-22", "dur": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper na Barra B1 – Eixo 17", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper na Barra B2 – Eixo 17", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Equipamentos", "ativ": "EMEC - Barramento - Interligação Equipamentos PR/REATOR - C2", "start": null, "end": "2026-05-29", "dur": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Coluna SPDA - Coluna Eixo E/24", "start": "2026-05-21", "end": "2026-05-21", "dur": 1, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Eixo 17 – Barra B1", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Colunas Existentes – Barra B1", "start": "2026-06-06", "end": "2026-06-07", "dur": 2, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Malha de Aterramento", "ativ": "EMEC - Malha de Aterramento - Rabichos", "start": null, "end": "2026-05-30", "dur": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - Casa Comando --> CUB [Cabo Força/Cont]", "start": null, "end": "2026-05-27", "dur": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - TSA", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - CFTV [Pórtico]", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - Iluminação [Pórtico]", "start": "2026-05-25", "end": "2026-06-05", "dur": 12, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - OPGW", "start": null, "end": "2026-05-20", "dur": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - OPLAT", "start": null, "end": "2026-06-03", "dur": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - Interligação ENGIE", "start": "2026-05-20", "end": "2026-05-22", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - TPC Barra 1/TPC Barra 2", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - C1", "ativ": "ELE - Lançamento de Cabos - C1", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C1", "ativ": "ELE - Interligação Cabos - Painel SPCS - C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C1", "ativ": "ELE - Interligação Cabos - Pátio Equipamentos - C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - C2", "ativ": "ELE - Lançamento de Cabos - C2", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C2", "ativ": "ELE - Interligação Cabos - Painel SPCS - C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C2", "ativ": "ELE - Interligação Cabos - Pátio Equipamentos - C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - Interfâce", "ativ": "ELE - Lançamento de Cabos - Interfâce", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - Interfâce", "ativ": "ELE - Interligação Cabos - Sala de Relés - Interfâce", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - Interfâce", "ativ": "ELE - Interligação Cabos - Equipamentos - Interfâce", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "CFTV", "ativ": "ELE - CFTV", "start": "2026-05-25", "end": "2026-05-26", "dur": 2, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Iluminação Reator", "ativ": "ELE - Iluminação Pátio/Reator", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Cabos - C1", "ativ": "COMISSIONAMENTO - N0 Cabos - C1", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Cabos - C2", "ativ": "COMISSIONAMENTO - N0 Cabos - C2", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento Cabos - Interfâce", "ativ": "COMISSIONAMENTO - N0 Cabos - Interfâce", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SECC - C2", "ativ": "COMISSIONAMENTO - Equipamentos - SECC - C2", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Malha Principal", "ativ": "COMISSIONAMENTO - Malha Princ (Escopo ANANAI)", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Rabichos", "ativ": "COMISSIONAMENTO - Malha - Rabichos", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento S.A.", "ativ": "COMISSIONAMENTO - TSA", "start": "2026-05-27", "end": "2026-05-29", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento S.A.", "ativ": "COMISSIONAMENTO - Cubiculo", "start": "2026-05-25", "end": "2026-05-28", "dur": 4, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Inicio Comissionamento", "ativ": "Inicio do Comissionamento", "start": "2026-05-25", "end": "2026-05-25", "dur": 1, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "Subida de Pontos (Binárias) + Funcional", "start": "2026-05-25", "end": "2026-05-27", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "Teste de controle (Intertravamento + Comandos Supervisório)", "start": "2026-05-28", "end": "2026-05-29", "dur": 2, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "Teste de proteção + Subida de Pontos analógicos", "start": "2026-05-30", "end": "2026-06-02", "dur": 4, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "Teste com RDP", "start": "2026-06-03", "end": "2026-06-03", "dur": 1, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "Subida de Pontos (Binárias) + Funcional", "start": "2026-06-04", "end": "2026-06-05", "dur": 2, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "Teste de controle (Intertravamento + Comandos Supervisório)", "start": "2026-06-07", "end": "2026-06-08", "dur": 2, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "Teste de proteção + Subida de Pontos analógicos", "start": "2026-06-09", "end": "2026-06-11", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "Teste com RDP", "start": "2026-06-12", "end": "2026-06-12", "dur": 1, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - S.A.", "ativ": "Subida de Pontos (Binárias) + Funcional", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 3, "grupo": "Comissionamento SPCS - Interface", "ativ": "COMISSIONAMENTO - SPCS - Interfâce", "start": null, "end": null, "dur": null, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Cubiculo", "ativ": "Desligamento - Integração Cubiculo", "start": "2026-06-06", "end": "2026-06-07", "dur": 2, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Barra B2", "ativ": "Desligamento - Integração Barra B2", "start": "2026-06-13", "end": "2026-06-14", "dur": 2, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Barra B1", "ativ": "Desligamento - Integração Barra B1", "start": "2026-06-20", "end": "2026-06-21", "dur": 2, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Energização", "ativ": "Energização", "start": "2026-06-30", "end": "2026-06-30", "dur": 1, "restric": "", "progress": {}}];
 
 // ═══════════════════════ CONSTANTS ═══════════════════════
-const TODAY_STR = '2026-05-18';
-const TODAY = new Date(TODAY_STR);
+// Use real current date (not hardcoded)
+const _NOW = new Date();
+const TODAY = new Date(_NOW.getFullYear(), _NOW.getMonth(), _NOW.getDate());
+const TODAY_STR = `${TODAY.getFullYear()}-${String(TODAY.getMonth()+1).padStart(2,'0')}-${String(TODAY.getDate()).padStart(2,'0')}`;
+// Set all dynamic date-dependent elements once DOM is ready
+document.addEventListener('DOMContentLoaded',function(){
+  // Date inputs
+  const tlInput=document.getElementById('tl-date-input');
+  if(tlInput)tlInput.value=TODAY_STR;
+  const waInput=document.getElementById('wa-date-input');
+  if(waInput){waInput.value=TODAY_STR;buildWaText();}
+  // Project header date
+  const pDate=document.getElementById('proj-date-val');
+  if(pDate)pDate.textContent=`${String(TODAY.getDate()).padStart(2,'0')} / ${String(TODAY.getMonth()+1).padStart(2,'0')} / ${TODAY.getFullYear()}`;
+  // Print emission date
+  document.querySelectorAll('.emission-date').forEach(el=>{
+    el.textContent=`${String(TODAY.getDate()).padStart(2,'0')}/${String(TODAY.getMonth()+1).padStart(2,'0')}/${TODAY.getFullYear()}`;
+  });
+});
 const DC = {
   'CIVIL':        {bg:'#C8DCFF',fill:'#0D3FA8',text:'#061A5C',badge:'#99B8FF'},
   'EMEC':         {bg:'#BAEECF',fill:'#0A6B2E',text:'#033A16',badge:'#7ED9A4'},
   'ELÉTRICA':     {bg:'#FFE490',fill:'#7A4F00',text:'#3A2200',badge:'#FFD040'},
-  'COMISSIO.':    {bg:'#DDD0FF',fill:'#5020C0',text:'#200870',badge:'#B89CFF'},
+  'COMISSIONAMENTO':    {bg:'#DDD0FF',fill:'#5020C0',text:'#200870',badge:'#B89CFF'},
   'ENERGIZAÇÃO':  {bg:'#FFD0B8',fill:'#C84000',text:'#601800',badge:'#FF9060'},
 };
 const PC  = ['','#B01A08','#7A4F00','#0A6B2E','#4A4A48'];
@@ -867,7 +935,42 @@ function renderDay(){
   html+=`</div>`;
   document.getElementById('day-body').innerHTML=html;
 }
-function navDay(dir){curDayIdx=Math.max(0,Math.min(allDayKeys.length-1,curDayIdx+dir));renderDay()}
+function navDay(dir){curDayIdx=Math.max(0,Math.min(allDayKeys.length-1,curDayIdx+dir));renderDay();renderDayWeather();}
+
+function renderDayWeather(){
+  const dk=allDayKeys[curDayIdx];
+  const el=document.getElementById('weather-bar-diario');
+  if(!el)return;
+  // Look up weather for this specific date from cache
+  fetchWeather().then(data=>{
+    if(!data){el.innerHTML='';return;}
+    const idx=data.time.indexOf(dk);
+    if(idx<0){el.innerHTML='';return;}
+    const code=data.weathercode[idx]||0;
+    const mm=+(data.precipitation_sum[idx]||0).toFixed(1);
+    const prob=data.precipitation_probability_max[idx]||0;
+    const tmax=data.temperature_2m_max[idx];
+    const tmin=data.temperature_2m_min[idx];
+    const {icon,label}=wmoToIcon(code);
+    const willRain=prob>=40||mm>0.5;
+    const highRisk=prob>=70||mm>=10;
+    const dt=pd(dk);
+    const isToday=dk===TODAY_STR;
+    el.innerHTML=`<div class="weather-bar">
+      <div class="wth-day${isToday?' today':''}${willRain?' rain-warn':''}" style="flex-direction:row;gap:10px;min-width:auto;padding:8px 14px;flex:none">
+        <span style="font-size:26px;line-height:1">${icon}</span>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <span style="font-size:12px;font-weight:700;color:var(--ink)">${label}</span>
+          <div style="display:flex;gap:10px;font-size:11px;font-weight:600">
+            ${willRain?`<span style="color:var(--B)">💧 ${Math.round(prob)}%</span><span style="color:var(--B)">🌧 ${mm} mm</span>`:'<span style="color:var(--ink3)">Sem chuva prevista</span>'}
+            ${tmax!=null?`<span style="color:var(--ink2)">🌡 ${Math.round(tmin)}°–${Math.round(tmax)}°C</span>`:''}
+          </div>
+          ${highRisk?`<span style="font-size:10px;font-weight:700;color:var(--R);background:var(--Rbg);padding:2px 7px;border-radius:4px;display:inline-block">⚠ Risco alto de chuva</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  });
+}
 renderDay();
 
 // ═══════════════════════ RESTRIÇÕES (ponto 5: só as marcadas) ═══════════════════════
@@ -990,14 +1093,180 @@ document.getElementById('legend-bar').innerHTML=
 // ═══════════════════════ TAB SWITCH + PRINT ═══════════════════════
 let tlBuilt=false;
 let activeTabId='disciplinas';
+// Note: swTab is defined later in the weather section with full logic
 
-function swTab(id,btn){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-  activeTabId=id;
-  if(id==='timeline'&&!tlBuilt){tlBuilt=true;buildTimeline()}
+// ═══════════════════════ CALENDÁRIO DE VENCIMENTOS ═══════════════════════
+let calBuilt=false;
+// Start at real current month
+let calYear=TODAY.getFullYear();
+let calMonth=TODAY.getMonth();
+
+function navCal(dir){
+  calMonth+=dir;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const TODAYSTR=TODAY_STR;
+  const lbl=`${MP[calMonth]} ${calYear}`;
+  document.getElementById('cal-lbl').textContent=lbl;
+
+  // All activities that END in this month or have no end (ignore energização sem data)
+  // Build a map: day-of-month -> [activities ending that day]
+  const endMap={};
+  ACTS.forEach(a=>{
+    if(!a.end)return;
+    const [ey,em,ed]=a.end.split('-').map(Number);
+    if(ey===calYear&&em-1===calMonth){
+      if(!endMap[ed])endMap[ed]=[];
+      endMap[ed].push(a);
+    }
+  });
+
+  // Days in month
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  // First day of month weekday (0=Sun)
+  const firstDow=new Date(calYear,calMonth,1).getDay();
+  // Shift so Mon=0
+  const startOffset=(firstDow+6)%7;
+
+  // Day of week headers
+  const DOWS=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  let html=`<div class="cal-grid-wrap">${DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join('')}`;
+
+  // Empty cells before day 1
+  for(let i=0;i<startOffset;i++){
+    html+=`<div class="cal-cell other-month"></div>`;
+  }
+
+  // Day cells
+  for(let day=1;day<=daysInMonth;day++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const isToday=dateStr===TODAYSTR;
+    const isWeekend=(new Date(calYear,calMonth,day).getDay()===0||new Date(calYear,calMonth,day).getDay()===6);
+    const acts=endMap[day]||[];
+
+    let cls='cal-cell';
+    if(isToday)cls+=' today';
+    else if(isWeekend)cls+=' weekend';
+
+    const alertCount=acts.filter(a=>diffDays(TODAYSTR,a.end)>=0).length;
+
+    // Weather for this day from cache (if available)
+    let wthHtml='';
+    if(weatherData){
+      const wIdx=weatherData.time.indexOf(dateStr);
+      if(wIdx>=0){
+        const code=weatherData.weathercode[wIdx]||0;
+        const mm=+(weatherData.precipitation_sum[wIdx]||0).toFixed(1);
+        const prob=weatherData.precipitation_probability_max[wIdx]||0;
+        const {icon}=wmoToIcon(code);
+        const willRain=prob>=40||mm>0.5;
+        const highRisk=prob>=70||mm>=10;
+        wthHtml=`<span style="display:inline-flex;align-items:center;gap:3px;font-size:11px;margin-left:4px">
+          <span title="${icon}" style="font-size:13px;line-height:1">${icon}</span>
+          ${willRain?`<span style="font-size:10px;font-weight:700;color:var(--B)">${mm}mm${highRisk?'⚠':''}` :''}
+          ${willRain?'</span>':''}
+        </span>`;
+      }
+    }
+
+    html+=`<div class="${cls}">`;
+    html+=`<div class="cal-day-num${isToday?' today-num':''}">
+      <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+        <span style="font-size:13px;font-weight:700">${day}</span>
+        ${wthHtml}
+      </div>
+      ${alertCount>0?`<span style="background:${diffDays(TODAYSTR,dateStr)<=0?'var(--R)':diffDays(TODAYSTR,dateStr)<=3?'#FF8C00':diffDays(TODAYSTR,dateStr)<=7?'var(--Y)':'var(--G)'};color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px">${alertCount}</span>`:''}
+    </div>`;
+
+    // Show ALL activities ending that day — no limit
+    acts.forEach(a=>{
+      const daysLeft=diffDays(TODAYSTR,a.end);
+      const s=sta(a);
+      let bg,tc;
+      if(s==='late'||daysLeft<0){bg='var(--Rbg)';tc='var(--Rtx)'}
+      else if(daysLeft===0){bg='var(--Rbg)';tc='var(--Rtx)'}
+      else if(daysLeft<=3){bg='#FFE4B0';tc='#7A3800'}
+      else if(daysLeft<=7){bg='var(--Ybg)';tc='var(--Ytx)'}
+      else if(s==='planned'){bg='var(--Bbg)';tc='var(--Btx)'}
+      else{bg='var(--Gbg)';tc='var(--Gtx)'}
+      const badgeBg=daysLeft<0?'var(--R)':daysLeft===0?'var(--R)':daysLeft<=3?'#C84000':daysLeft<=7?'var(--Y)':'var(--G)';
+      const daysTxt=daysLeft<0?`${Math.abs(daysLeft)}d atr.`:daysLeft===0?'Hoje!':daysLeft===1?'Amanhã':`${daysLeft}d`;
+      const c=DC[a.disc]||{fill:'#888'};
+      html+=`<div class="cal-act-pill" style="background:${bg}" title="${a.ativ} — ${a.grupo}">
+        <span class="cal-act-name" style="color:${tc}">
+          <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${c.fill};margin-right:3px;flex-shrink:0;vertical-align:2px"></span>${a.ativ.replace(/^(CIVIL|EMEC|ELE|COMISSIONAMENTO|Desligamento)\s*[-–]?\s*/i,'').slice(0,34)}
+        </span>
+        <span class="cal-days-badge" style="background:${badgeBg};color:#fff">${daysTxt}</span>
+      </div>`;
+    });
+
+    // If no activities ending this day, show subtle indicator if any activity is ACTIVE
+    if(acts.length===0){
+      const active=ACTS.filter(a=>{
+        if(!a.start||!a.end)return false;
+        return pd(dateStr)>=pd(a.start)&&pd(dateStr)<=pd(a.end);
+      });
+      if(active.length>0&&!isWeekend){
+        html+=`<div style="font-size:9px;color:var(--ink3);margin-top:2px">${active.length} ativ. em curso</div>`;
+      }
+    }
+
+    html+='</div>';
+  }
+
+  // Fill trailing cells to complete last row
+  const totalCells=startOffset+daysInMonth;
+  const remainder=totalCells%7;
+  if(remainder>0){
+    for(let i=0;i<7-remainder;i++){
+      html+=`<div class="cal-cell other-month"></div>`;
+    }
+  }
+
+  html+='</div>'; // close cal-grid-wrap
+
+  // Summary list below calendar — all activities ending this month sorted by end date
+  const monthActs=ACTS.filter(a=>{
+    if(!a.end)return false;
+    const [ey,em]=a.end.split('-').map(Number);
+    return ey===calYear&&em-1===calMonth;
+  }).sort((a,b)=>a.end.localeCompare(b.end));
+
+  if(monthActs.length>0){
+    html+=`<div style="margin-top:16px">
+      <div class="stitle">Vencimentos de ${MP[calMonth]} ${calYear} — ${monthActs.length} atividades</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px">`;
+    monthActs.forEach(a=>{
+      const daysLeft=diffDays(TODAYSTR,a.end);
+      const s=sta(a);
+      let bg,tc,badge,badgeBg;
+      if(daysLeft<0){bg='var(--Rbg)';tc='var(--Rtx)';badge=`${Math.abs(daysLeft)}d atrasada`;badgeBg='var(--R)'}
+      else if(daysLeft===0){bg='var(--Rbg)';tc='var(--Rtx)';badge='Termina hoje!';badgeBg='var(--R)'}
+      else if(daysLeft<=3){bg='#FFE4B0';tc='#7A3800';badge=`Faltam ${daysLeft}d`;badgeBg='#C84000'}
+      else if(daysLeft<=7){bg='var(--Ybg)';tc='var(--Ytx)';badge=`Faltam ${daysLeft}d`;badgeBg='var(--Y)'}
+      else if(s==='planned'){bg='var(--Bbg)';tc='var(--Btx)';badge=`Faltam ${daysLeft}d`;badgeBg='var(--B)'}
+      else{bg='var(--Gbg)';tc='var(--Gtx)';badge=`Faltam ${daysLeft}d`;badgeBg='var(--G)'}
+      const c=DC[a.disc]||{fill:'#888',badge:'#eee',text:'#333'};
+      html+=`<div style="background:${bg};border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;border-left:4px solid ${DC[a.disc]?.fill||'#888'}">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;color:${tc};white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${a.ativ}">${a.ativ}</div>
+          <div style="font-size:10px;color:${tc};opacity:.75;margin-top:1px;text-transform:uppercase;letter-spacing:.04em">${a.grupo} · Término: ${fd(a.end,true)}</div>
+        </div>
+        <div>
+          <span class="dpill" style="background:${badgeBg};color:#fff;font-size:11px">${badge}</span>
+        </div>
+      </div>`;
+    });
+    html+='</div></div>';
+  }else{
+    html+=`<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px;text-transform:uppercase;letter-spacing:.06em">Nenhuma atividade vence em ${MP[calMonth]} ${calYear}</div>`;
+  }
+
+  document.getElementById('cal-grid').innerHTML=html;
 }
 
 // ── Extract CSS directly from <style> tags (reliable, no CORS issues) ──
@@ -1104,6 +1373,120 @@ function printModal(modalId){
   pw.document.write(html);
   pw.document.close();
 }
+
+// ═══════════════════════ WEATHER — Open-Meteo API (Ponta Grossa PR) ═══════════════════════
+// Coordinates: Ponta Grossa PR · lat -25.09, lon -50.16
+const WTH_URL = 'https://api.open-meteo.com/v1/forecast?latitude=-25.09&longitude=-50.16' +
+  '&daily=precipitation_sum,precipitation_probability_max,weathercode,temperature_2m_max,temperature_2m_min' +
+  '&timezone=America%2FSao_Paulo&forecast_days=7';
+
+// WMO weather code → emoji icon + label
+function wmoToIcon(code){
+  if(code===0)return{icon:'☀️',label:'Céu limpo'};
+  if(code<=2)return{icon:'⛅',label:'Parcialmente nublado'};
+  if(code<=3)return{icon:'☁️',label:'Nublado'};
+  if(code<=49)return{icon:'🌫️',label:'Névoa/Neblina'};
+  if(code<=59)return{icon:'🌦️',label:'Garoa'};
+  if(code<=69)return{icon:'🌧️',label:'Chuva'};
+  if(code<=79)return{icon:'🌨️',label:'Neve/Granizo'};
+  if(code<=82)return{icon:'🌧️',label:'Chuva forte'};
+  if(code<=84)return{icon:'⛈️',label:'Temporal'};
+  if(code<=99)return{icon:'⛈️',label:'Trovoada'};
+  return{icon:'🌡️',label:'Variável'};
+}
+
+let weatherData=null; // cache
+
+async function fetchWeather(){
+  if(weatherData)return weatherData;
+  try{
+    const res=await fetch(WTH_URL);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    weatherData=json.daily;
+    return weatherData;
+  }catch(e){
+    console.warn('Weather fetch failed:',e);
+    return null;
+  }
+}
+
+function renderWeatherBars(targetIds, maxDays){
+  targetIds.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML='<div class="weather-bar loading">Carregando previsão...</div>';
+  });
+
+  fetchWeather().then(data=>{
+    if(!data){
+      targetIds.forEach(id=>{
+        const el=document.getElementById(id);
+        if(el)el.innerHTML='<div class="weather-bar error">⚠ Sem previsão disponível</div>';
+      });
+      return;
+    }
+
+    const days=data.time.slice(0,maxDays||7);
+    const todayStr=TODAY_STR;
+    const DN2=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+    let html='<div class="weather-bar">';
+    days.forEach((dateStr,i)=>{
+      const isToday=dateStr===todayStr;
+      const code=data.weathercode[i]||0;
+      const mm=+(data.precipitation_sum[i]||0).toFixed(1);
+      const prob=data.precipitation_probability_max[i]||0;
+      const {icon}=wmoToIcon(code);
+      const dt=new Date(dateStr+'T12:00:00');
+      const dayLbl=isToday?'Hoje':DN2[dt.getDay()];
+      const dateLbl=`${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
+      const willRain=prob>=40||mm>0.5;
+      const highRisk=prob>=70||mm>=10;
+
+      html+=`<div class="wth-day${isToday?' today':''}${willRain?' rain-warn':''}" title="${dayLbl} ${dateLbl}${willRain?' · '+mm+'mm · '+Math.round(prob)+'% chuva':''}">
+        <span class="wth-date-lbl${isToday?' today':''}">${dayLbl}<br>${dateLbl}</span>
+        <span class="wth-icon-lg">${icon}</span>
+        ${willRain
+          ? `<span class="wth-mm">${mm} mm</span>${highRisk?'<span class="wth-alert-dot" title="Risco alto de chuva"></span>':''}`
+          : `<span class="wth-mm dry">—</span>`
+        }
+      </div>`;
+    });
+    html+='</div>';
+
+    targetIds.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.innerHTML=html;
+    });
+  });
+}
+
+// Hook weather loading into tab switch
+function swTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  activeTabId=id;
+  if(id==='timeline'&&!tlBuilt){tlBuilt=true;buildTimeline()}
+  if(id==='calendario'){
+    if(!calBuilt){calBuilt=true;}
+    // Always fetch weather first, then render calendar so inline weather shows
+    fetchWeather().then(()=>renderCalendar());
+  }
+  // Load weather for tabs that have weather bars
+  if(id==='semanas'){renderWeatherBars(['weather-bar-semanas'],7)}
+  if(id==='diario'){renderDayWeather()}
+  if(id==='calendario'){renderWeatherBars(['weather-bar-calendario'],7)}
+}
+
+// Also load weather for diario on first render (already initialized)
+document.addEventListener('DOMContentLoaded',function(){
+  // Pre-fetch weather in background so it's ready
+  fetchWeather();
+  // Set Semanas weather on load since it's the first tab shown
+  renderWeatherBars(['weather-bar-semanas'],7);
+});
 </script>
 </body>
 </html>
