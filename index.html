@@ -139,19 +139,6 @@ tr:hover td{background:var(--sf2)!important}
 .wk-card:hover .wk-btn,.wk-card.cur .wk-btn{background:var(--or);color:#fff;border-color:var(--or)}
 
 /* MONTH */
-.mo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-.mo-col{background:var(--sf);border:1.5px solid var(--rule2);border-radius:var(--rlg);overflow:hidden}
-.mo-hdr{padding:10px 14px;border-bottom:2px solid var(--rule2);display:flex;align-items:baseline;justify-content:space-between;cursor:pointer;background:var(--dk);transition:background .12s}
-.mo-hdr:hover{background:var(--dk2)}
-.mo-name{font-size:14px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.06em}
-.mo-name.cur{color:var(--or2)}
-.mo-cnt{font-size:12px;color:rgba(255,255,255,.5);font-weight:600}
-.mo-body{padding:7px;display:flex;flex-direction:column;gap:5px;max-height:280px;overflow-y:auto}
-.mo-body.expanded{max-height:none}
-.mo-disc{padding:7px 10px;border-radius:6px}
-.mo-disc-hdr{font-size:12px;font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
-.mo-disc-item{font-size:12px;opacity:.85;line-height:1.6}
-.mo-show-more{font-size:11px;font-weight:700;color:var(--or);text-align:center;padding:6px;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;border-top:1px solid var(--rule)}
 
 /* TIMELINE */
 .tl-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -407,7 +394,6 @@ tr:hover td{background:var(--sf2)!important}
   <div class="week-grid" id="week-grid"></div>
 </div>
 
-  <div class="mo-grid" id="mo-grid"></div>
 </div>
 
 <!-- DIÁRIO -->
@@ -560,21 +546,6 @@ tr:hover td{background:var(--sf2)!important}
     </div>
     <div class="modal-kpis" id="mkpis"></div>
     <div class="modal-body" id="mbody"></div>
-  </div>
-</div>
-
-<!-- MODAL meses -->
-<div class="mwrap" id="mo-mwrap" onclick="closeMoMod(event)">
-  <div class="modal" style="max-width:860px">
-    <div class="modal-hdr">
-      <div class="modal-title" id="mo-mtitle"></div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <button class="print-btn" onclick="printModal('mo-mwrap')" style="font-size:10px;padding:5px 12px">🖨 A3</button>
-        <button class="modal-close" onclick="closeMoModDirect()">✕</button>
-      </div>
-    </div>
-    <div class="modal-kpis" id="mo-mkpis"></div>
-    <div class="modal-body" id="mo-mbody"></div>
   </div>
 </div>
 
@@ -925,75 +896,6 @@ document.getElementById('week-grid').innerHTML=weeks.map(wk=>{
 }).join('');
 
 // ═══════════════════════ MESES (ponto 8: detalhe completo via modal) ═══════════════════════
-const moMap={};
-ACTS.forEach(a=>{
-  if(!a.start)return;
-  const sd=pd(a.start),ed=pd(a.end||a.start);
-  for(let d=new Date(sd);d<=ed;d.setDate(d.getDate()+1)){
-    const mk=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    if(!moMap[mk])moMap[mk]={label:`${MP[d.getMonth()]} ${d.getFullYear()}`,acts:[]};
-    if(!moMap[mk].acts.find(x=>x.ativ===a.ativ))moMap[mk].acts.push(a);
-  }
-});
-const curMk=`${TODAY.getFullYear()}-${String(TODAY.getMonth()+1).padStart(2,'0')}`;
-document.getElementById('mo-grid').innerHTML=Object.keys(moMap).sort().map(mk=>{
-  const m=moMap[mk],isCur=mk===curMk;
-  const bd={};m.acts.forEach(a=>{if(!bd[a.disc])bd[a.disc]=[];bd[a.disc].push(a)});
-  return`<div class="mo-col">
-    <div class="mo-hdr" onclick="openMoModal('${mk}')" title="Clique para ver todas as atividades">
-      <span class="mo-name${isCur?' cur':''}">${isCur?'● ':''} ${m.label}</span>
-      <span class="mo-cnt">${m.acts.length} ativ. 🔍</span>
-    </div>
-    <div class="mo-body">
-      ${Object.entries(bd).map(([d,da])=>{
-        const c=DC[d]||{bg:'#eee',text:'#333'};
-        return`<div class="mo-disc" style="background:${c.bg}">
-          <div class="mo-disc-hdr" style="color:${c.text}">${d} · ${da.length}</div>
-          ${da.map(a=>`<div class="mo-disc-item" style="color:${c.text}">${a.ativ}</div>`).join('')}
-        </div>`;
-      }).join('')}
-    </div>
-  </div>`;
-}).join('');
-
-function openMoModal(mk){
-  const m=moMap[mk];if(!m)return;
-  const isCur=mk===curMk;
-  document.getElementById('mo-mtitle').innerHTML=(isCur?'<span>Mês Atual</span> — ':'')+m.label+' · '+m.acts.length+' atividades';
-  const bd={};m.acts.forEach(a=>{if(!bd[a.disc])bd[a.disc]=[];bd[a.disc].push(a)});
-  const a2=m.acts.filter(a=>sta(a)==='ongoing').length;
-  const p2=m.acts.filter(a=>sta(a)==='planned').length;
-  const l2=m.acts.filter(a=>sta(a)==='late').length;
-  const pp=m.acts.filter(a=>a.prio===1).length;
-  document.getElementById('mo-mkpis').innerHTML=`
-    <div class="mk"><div class="mk-val" style="color:var(--G)">${a2}</div><div class="mk-lbl">Em Andamento</div></div>
-    <div class="mk"><div class="mk-val" style="color:var(--B)">${p2}</div><div class="mk-lbl">Planejadas</div></div>
-    <div class="mk"><div class="mk-val" style="color:var(--R)">${l2}</div><div class="mk-lbl">Atrasadas</div></div>
-    <div class="mk"><div class="mk-val">${pp}</div><div class="mk-lbl">Prioridade 1</div></div>
-  `;
-  let html='';
-  Object.entries(bd).forEach(([d,da])=>{
-    const c=DC[d]||{bg:'#eee',text:'#333'};
-    html+=`<div class="mdsc"><div class="mdsc-hdr" style="background:${c.fill||c.bg};color:#fff"><span>${d}</span><span>${da.length} atividades</span></div>`;
-    da.sort((a,b)=>a.prio-b.prio).forEach(a=>{
-      const s=sta(a);const dl=dlLabel(a);
-      html+=`<div class="mrow">
-        <span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'};flex-shrink:0">${a.prio||'?'}</span>
-        <span class="mrow-name">${a.ativ}</span>
-        <span class="mrow-grupo">${a.grupo}</span>
-        <span class="mrow-dates">${fd(a.start)}→${fd(a.end)}</span>
-        <span style="font-size:9px;font-weight:700;color:${dl.color};white-space:nowrap">${dl.txt}</span>
-        <span class="spill" style="background:${SBG[s]};color:${ST[s]};flex-shrink:0">${SL[s]}</span>
-      </div>`;
-    });
-    html+='</div>';
-  });
-  document.getElementById('mo-mbody').innerHTML=html;
-  document.getElementById('mo-mwrap').classList.add('open');
-}
-function closeMoMod(e){if(e.target===document.getElementById('mo-mwrap'))closeMoModDirect()}
-function closeMoModDirect(){document.getElementById('mo-mwrap').classList.remove('open')}
-
 // ═══════════════════════ DIÁRIO (ponto 6: nome Diário, mostra atividades do dia) ═══════════════════════
 const allDayKeys=[...new Set(
   ACTS.filter(a=>a.end).flatMap(a=>{
