@@ -146,7 +146,7 @@ tr:hover td{background:var(--sf2)!important}
 .tl-table{border-collapse:collapse;font-size:10px;white-space:nowrap;min-width:100%}
 .tl-table th{padding:6px 8px;background:var(--dk);color:#fff;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1px solid #333;text-align:center;white-space:nowrap}
 .tl-table td{padding:3px 4px;border:1px solid var(--rule);vertical-align:middle;background:var(--sf)}
-.tl-act-cell{padding:6px 12px!important;font-size:11px;font-weight:600;color:var(--ink);text-align:left;width:320px;min-width:320px;max-width:320px;white-space:normal;word-break:break-word;border-right:2px solid var(--rule2)!important;background:var(--sf2)!important;vertical-align:middle;line-height:1.4}
+.tl-act-cell{padding:5px 10px!important;font-size:11px;font-weight:600;color:var(--ink);text-align:left;min-width:260px;white-space:nowrap!important;word-break:normal!important;overflow:visible!important;border-right:2px solid var(--rule2)!important;background:var(--sf2)!important;vertical-align:middle!important;line-height:1.4;position:sticky;left:0;z-index:2}
 .tl-date-hdr{font-size:9px;padding:4px 3px!important;min-width:28px;max-width:28px;text-align:center}
 .tl-date-hdr.today-th{background:var(--or)!important;color:#fff!important;font-weight:700}
 .tl-date-hdr.sel-th{background:#FF8C00!important;color:#fff!important;font-weight:700}
@@ -365,24 +365,42 @@ tr:hover td{background:var(--sf2)!important}
 <!-- TIMELINE -->
 <div id="timeline" class="panel">
   <div class="ptoolbar">
-    <div class="tl-ctrl">
+    <div class="tl-ctrl" style="flex-wrap:wrap;gap:10px">
       <div class="stitle" style="margin-bottom:0;flex:none">Timeline — Previsto por atividade</div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em">Filtrar dia:</span>
-        <button onclick="resetTlDate()" style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);cursor:pointer;color:var(--G);text-transform:uppercase;letter-spacing:.04em">✅ Todas</button>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em">Filtrar:</span>
+        <!-- Day filter -->
+        <button id="tl-f-all" onclick="setTlFilter('all',this)"
+          style="font-family:'Sora',sans-serif;font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;border:1.5px solid var(--rule2);background:var(--or);color:#fff;cursor:pointer;transition:all .15s">
+          Todas
+        </button>
+        <button id="tl-f-late" onclick="setTlFilter('late',this)"
+          style="font-family:'Sora',sans-serif;font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;border:1.5px solid var(--R);background:transparent;color:var(--R);cursor:pointer;transition:all .15s">
+          Atrasadas
+        </button>
+        <button id="tl-f-ongoing" onclick="setTlFilter('ongoing',this)"
+          style="font-family:'Sora',sans-serif;font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;border:1.5px solid #E8560A;background:transparent;color:#E8560A;cursor:pointer;transition:all .15s">
+          Em execução
+        </button>
+        <button id="tl-f-concluded" onclick="setTlFilter('concluded',this)"
+          style="font-family:'Sora',sans-serif;font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;border:1.5px solid #0A7A2A;background:transparent;color:#0A7A2A;cursor:pointer;transition:all .15s">
+          Concluídas
+        </button>
+        <span style="width:1px;height:20px;background:var(--rule2);display:inline-block;margin:0 2px"></span>
+        <!-- Day selector -->
         <input type="date" id="tl-date-input" style="font-family:'Sora',sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);color:var(--ink);cursor:pointer" onchange="buildTimeline()">
-        <button onclick="setTlToday()" style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;border:1.5px solid var(--rule2);background:var(--sf);cursor:pointer;color:var(--or);text-transform:uppercase;letter-spacing:.04em">📅 Hoje</button>
+        <button onclick="setTlToday()" style="font-family:'Sora',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;border:1.5px solid var(--rule2);background:var(--sf);cursor:pointer;color:var(--or)">📅 Hoje</button>
       </div>
     </div>
     <button class="print-btn" onclick="printTab()">🖨 Imprimir A3</button>
   </div>
   <div class="tl-legend-row">
     <span style="font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3)">Legenda:</span>
-    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:var(--or);border-radius:2px"></span> Dia selecionado</span>
-    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:var(--B);border-radius:2px;opacity:.85"></span> Atividade planejada</span>
-    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:var(--G);border-radius:2px;opacity:.85"></span> Em andamento</span>
-    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:var(--R);border-radius:2px;opacity:.85"></span> Atrasada</span>
-    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:10px;background:#FFA500;border-radius:2px"></span> Ativa no dia selecionado</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:5px;background:#8BA8CC;border-radius:2px;opacity:.7"></span> Planejado</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:9px;background:#E8560A;border-radius:2px"></span> Em execução (real)</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:9px;background:#0A7A2A;border-radius:2px"></span> Concluído ✅</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:9px;background:#C84000;border-radius:2px"></span> Atrasado (real)</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px"><span style="display:inline-block;width:28px;height:9px;background:#FF8C00;border-radius:2px"></span> Ativo no dia selecionado</span>
   </div>
   <div class="tl-wrap" id="tl-wrap"></div>
 </div>
@@ -448,6 +466,10 @@ tr:hover td{background:var(--sf2)!important}
       style="font-family:'Sora',sans-serif;font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;border:1.5px solid var(--Y);background:transparent;color:var(--Y);cursor:pointer;transition:all .15s;letter-spacing:.03em">
       Vencem em 7 dias
     </button>
+    <button id="cal-f-concluded" onclick="setCalFilter('concluded',this)"
+      style="font-family:'Sora',sans-serif;font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;border:1.5px solid #1A7A08;background:transparent;color:#1A7A08;cursor:pointer;transition:all .15s;letter-spacing:.03em">
+      ✅ Concluídas
+    </button>
     <span id="cal-filter-count" style="font-size:11px;color:var(--ink3);font-weight:600;margin-left:6px"></span>
   </div>
   <!-- Legend -->
@@ -483,6 +505,7 @@ tr:hover td{background:var(--sf2)!important}
     <span style="display:flex;align-items:center;gap:5px"><span style="width:22px;height:12px;border-radius:3px;background:var(--R);display:inline-block"></span> Término da atividade</span>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:22px;height:12px;border-radius:3px;background:var(--B);opacity:.35;display:inline-block"></span> Em execução (entre início e término)</span>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:22px;height:12px;border-radius:3px;background:var(--or);display:inline-block"></span> Início e Término no mesmo dia</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:22px;height:12px;border-radius:3px;background:#1A7A08;display:inline-block"></span> ✅ Concluída (data real)</span>
     <span style="font-size:11px;color:var(--ink3)">💡 Clique em qualquer atividade para destacá-la. Clique novamente para limpar.</span>
   </div>
   <div id="it-grid"></div>
@@ -551,7 +574,7 @@ tr:hover td{background:var(--sf2)!important}
 
 <script>
 // ═══════════════════════ DATA ═══════════════════════
-const ACTS = [{"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Drenagem Porosa", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Dissipador 1", "start": "2026-06-15", "end": "2026-06-19", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Escada [Dissipador 2]", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "restric": "Material: Pedra/Gaiola", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Dissipador 2", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Drenagem", "ativ": "Civil - Escada [Dissipador 3]", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "restric": "Material: Pedra/Gaiola", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Drenagem", "ativ": "Civil - Dissipador 3", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Drenagem", "ativ": "Civil - Meia Cana", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Drenagem", "ativ": "Civil - Bacia de Infiltração", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "restric": "Equipamento: Escavadeira", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Reatores", "ativ": "Civil - Britamento Bacia - Reatores", "start": "2026-05-18", "end": "2026-05-20", "dur": 3, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Instalação de placas e extintores", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Acesso a Casa de Comando [Rampa/Escada]", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - SPDA Externo", "start": "2026-05-20", "end": "2026-05-29", "dur": 10, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Abastecimento de Água [Poço Artesiano]", "start": "2026-05-19", "end": "2026-06-07", "dur": 20, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Instalações Elétricas [Iluminação e Tomadas]", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Ar condicionado + Automatismo", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Instalação Eletrocalha casa de Comando", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra CFTV + Instalação das Câmeras", "start": "2026-05-21", "end": "2026-05-30", "dur": 10, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra Controle de acesso + Equipamentos", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra Proteção Incêndio + sensores", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Cubículo", "ativ": "Civil - Fundação do Cubículo", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Britamento", "ativ": "Civil - Urbanização - Britamento de Pátio (Escopo ANANAI)", "start": "2026-05-18", "end": "2026-05-29", "dur": 12, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Grama", "ativ": "Civil - Urbanização - Grama", "start": "2026-05-18", "end": "2026-06-06", "dur": 20, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Cerca Neutro", "ativ": "Civil - Urbanização - Cerca de Neutro", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 3, "grupo": "Abrigo Incêndio", "ativ": "Civil - Urbanização - Abrigo Incêndio Pátio", "start": "2026-05-18", "end": "2026-06-05", "dur": 19, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Terraplanagem (Pedra)", "start": "2026-05-21", "end": "2026-06-05", "dur": 16, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Meio Fio", "start": "2026-05-22", "end": "2026-06-06", "dur": 16, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Blocos intertravados", "start": "2026-05-25", "end": "2026-06-30", "dur": 37, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Solo Grampeado", "ativ": "Civil - Urbanização - Solo Grampeado", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Estacionamento", "ativ": "Civil - Urbanização - Estacionamento (Área da ENGIE)", "start": "2026-06-22", "end": "2026-07-10", "dur": 19, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Estacionamento", "ativ": "Civil - Urbanização - Instalação de Cerca limite e Portão (Área da ENGIE)", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper Pórtico Eixo A – C2", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Rígido", "ativ": "EMEC - Barramento Rígido - Instalação de Barramento de Neutro", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper na Barra B1 – Eixo 17", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper na Barra B2 – Eixo 17", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Equipamentos", "ativ": "EMEC - Barramento - Interligação Equipamentos PR/REATOR - C2", "start": "2026-05-18", "end": "2026-05-29", "dur": 12, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Coluna SPDA - Coluna Eixo E/24", "start": "2026-05-21", "end": "2026-05-21", "dur": 1, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Eixo 17 – Barra B1", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Colunas Existentes – Barra B1", "start": "2026-06-06", "end": "2026-06-07", "dur": 2, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Malha de Aterramento", "ativ": "EMEC - Malha de Aterramento - Rabichos", "start": "2026-05-18", "end": "2026-05-30", "dur": 13, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "CIVIL - Encaminhamento - Casa Comando --> CUB [Cabo Força/Cont]", "start": "2026-05-18", "end": "2026-05-27", "dur": 10, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "ELE - Encaminhamento - TSA", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - CFTV [Pórtico]", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - Iluminação [Pórtico]", "start": "2026-05-25", "end": "2026-06-05", "dur": 12, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - OPGW", "start": "2026-05-18", "end": "2026-05-20", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - OPLAT", "start": "2026-05-18", "end": "2026-06-03", "dur": 17, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - Interligação ENGIE", "start": "2026-05-20", "end": "2026-05-22", "dur": 3, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - TPC Barra 1/TPC Barra 2", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - C1", "ativ": "ELE - Lançamento de Cabos - C1", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C1", "ativ": "ELE - Interligação Cabos - Painel SPCS - C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C1", "ativ": "ELE - Interligação Cabos - Pátio Equipamentos - C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - C2", "ativ": "ELE - Lançamento de Cabos - C2", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C2", "ativ": "ELE - Interligação Cabos - Painel SPCS - C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C2", "ativ": "ELE - Interligação Cabos - Pátio Equipamentos - C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - Interfâce", "ativ": "ELE - Lançamento de Cabos - Interfâce", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - Interfâce", "ativ": "ELE - Interligação Cabos - Sala de Relés - Interfâce", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - Interfâce", "ativ": "ELE - Interligação Cabos - Equipamentos - Interfâce", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Teleassistência", "ativ": "ELE - Instalação de Cameras - Pátio", "start": "2026-05-25", "end": "2026-05-26", "dur": 2, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Iluminação Reator", "ativ": "ELE - Iluminação Pátio/Reator", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Cabos - C1", "ativ": "COMISSIONAMENTO - N0 Cabos - C1", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Cabos - C2", "ativ": "COMISSIONAMENTO - N0 Cabos - C2", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento Cabos - Interfâce", "ativ": "COMISSIONAMENTO - N0 Cabos - Interfâce", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SECC - C2", "ativ": "COMISSIONAMENTO - Equipamentos - SECC - C2", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Malha Principal", "ativ": "COMISSIONAMENTO - Malha Principal", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Rabichos", "ativ": "COMISSIONAMENTO - Malha - Rabichos", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento S.A.", "ativ": "COMISSIONAMENTO - TSA", "start": "2026-05-27", "end": "2026-05-29", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento S.A.", "ativ": "COMISSIONAMENTO - Cubiculo", "start": "2026-05-25", "end": "2026-05-28", "dur": 4, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Inicio Comissionamento", "ativ": "Inicio do Comissionamento", "start": "2026-05-25", "end": "2026-05-25", "dur": 1, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "COMISSIONAMENTO - Subida de Pontos (Binárias) + Funcional", "start": "2026-05-25", "end": "2026-05-27", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "COMISSIONAMENTO - Teste de controle (Intertravamento + Comandos Supervisório)", "start": "2026-05-28", "end": "2026-05-29", "dur": 2, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "COMISSIONAMENTO - Teste de proteção + Subida de Pontos analógicos + RDP", "start": "2026-05-30", "end": "2026-06-03", "dur": 5, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "COMISSIONAMENTO - Subida de Pontos (Binárias) + Funcional", "start": "2026-06-04", "end": "2026-06-05", "dur": 2, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "COMISSIONAMENTO - Teste de controle (Intertravamento + Comandos Supervisório)", "start": "2026-06-07", "end": "2026-06-08", "dur": 2, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "COMISSIONAMENTO - Teste de proteção + Subida de Pontos analógicos + RDP", "start": "2026-06-09", "end": "2026-06-12", "dur": 4, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - S.A.", "ativ": "COMISSIONAMENTO - Subida de Pontos (Binárias) + Funcional", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 3, "grupo": "Comissionamento SPCS - Interface", "ativ": "COMISSIONAMENTO - SPCS - Interfâce Barra B1", "start": "2026-06-16", "end": "2026-06-19", "dur": 4, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 3, "grupo": "Comissionamento SPCS - Interface", "ativ": "COMISSIONAMENTO - SPCS - Interfâce Barra B2 + ENGIE REA", "start": "2026-06-08", "end": "2026-06-12", "dur": 5, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Cubiculo", "ativ": "DESLIGAMENTO - Integração Cubiculo", "start": "2026-06-06", "end": "2026-06-07", "dur": 2, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Barra B2", "ativ": "DESLIGAMENTO - Integração Barra B2", "start": "2026-06-13", "end": "2026-06-14", "dur": 2, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Barra B1", "ativ": "DESLIGAMENTO - Integração Barra B1", "start": "2026-06-20", "end": "2026-06-23", "dur": 4, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Energização", "ativ": "Energização", "start": "2026-06-30", "end": "2026-06-30", "dur": 1, "restric": "", "progress": {}}];
+const ACTS = [{"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Drenagem Porosa", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "real_start": "2026-05-25", "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Dissipador 1", "start": "2026-06-15", "end": "2026-06-19", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Escada [Dissipador 2]", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "real_start": null, "real_end": null, "restric": "Material: Pedra/Gaiola;", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Drenagem", "ativ": "Civil - Dissipador 2", "start": "2026-06-01", "end": "2026-06-13", "dur": 13, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Drenagem", "ativ": "Civil - Escada [Dissipador 3]", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "real_start": null, "real_end": null, "restric": "Material: Pedra/Gaiola", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Drenagem", "ativ": "Civil - Dissipador 3", "start": "2026-06-22", "end": "2026-07-04", "dur": 13, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Drenagem", "ativ": "Civil - Meia Cana", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Drenagem", "ativ": "Civil - Bacia de Infiltração", "start": "2026-07-06", "end": "2026-07-18", "dur": 13, "real_start": null, "real_end": null, "restric": "Equipamento: Escavadeira", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Reatores", "ativ": "Civil - Britamento Bacia - Reatores", "start": "2026-05-18", "end": "2026-05-20", "dur": 3, "real_start": "2026-05-13", "real_end": "2026-05-23", "restric": "Material: Brita", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Instalação de placas e extintores", "start": "2026-05-25", "end": "2026-06-05", "dur": 12, "real_start": null, "real_end": null, "restric": "Material: Placas de Sinalização;", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Acesso a Casa de Comando [Rampa/Escada]", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - SPDA Externo", "start": "2026-05-20", "end": "2026-05-29", "dur": 10, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Casa de Comando", "ativ": "Civil - Casa de Comando - Abastecimento de Água [Poço Artesiano]", "start": "2026-06-08", "end": "2026-06-30", "dur": 23, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Instalações Elétricas [Iluminação e Tomadas]", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "real_start": "2026-05-18", "real_end": null, "restric": "Material: Tomadas/Compras", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Ar condicionado + Automatismo", "start": "2026-05-20", "end": "2026-05-23", "dur": 4, "real_start": "2026-05-18", "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Instalação Eletrocalha casa de Comando", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "real_start": "2026-05-18", "real_end": "2026-05-22", "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra CFTV + Instalação das Câmeras", "start": "2026-05-21", "end": "2026-05-30", "dur": 10, "real_start": "2026-05-20", "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra Controle de acesso + Equipamentos de Acesso", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Casa de Comando", "ativ": "EMEC - Casa de Comando - Infra Proteção Incêndio + sensores", "start": "2026-06-08", "end": "2026-06-13", "dur": 6, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Cubículo", "ativ": "Civil - Fundação do Cubículo", "start": "2026-05-18", "end": "2026-05-28", "dur": 11, "real_start": "2026-05-21", "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Britamento", "ativ": "Civil - Urbanização - Britamento de Pátio (Escopo ANANAI)", "start": "2026-05-18", "end": "2026-05-29", "dur": 12, "real_start": "2026-05-18", "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Grama", "ativ": "Civil - Urbanização - Grama", "start": "2026-05-18", "end": "2026-06-06", "dur": 20, "real_start": "2026-05-18", "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Cerca Neutro", "ativ": "Civil - Urbanização - Cerca de Neutro (2)", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 3, "grupo": "Abrigo Incêndio", "ativ": "Civil - Urbanização - Abrigo Incêndio Pátio", "start": "2026-05-26", "end": "2026-06-05", "dur": 11, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Terraplanagem (Pedra)", "start": "2026-05-25", "end": "2026-06-05", "dur": 12, "real_start": null, "real_end": null, "restric": "Outros: (O) Operador Doente", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Meio Fio", "start": "2026-05-28", "end": "2026-06-06", "dur": 10, "real_start": null, "real_end": null, "restric": "Outros: (O) Operador Doente", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Pavimentação", "ativ": "Civil - Urbanização - Via Pavimentada - Blocos intertravados", "start": "2026-05-28", "end": "2026-06-30", "dur": 34, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 1, "grupo": "Solo Grampeado", "ativ": "Civil - Urbanização - Solo Grampeado", "start": "2026-05-27", "end": "2026-05-29", "dur": 3, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 4, "grupo": "Estacionamento", "ativ": "Civil - Urbanização - Estacionamento (Área da ENGIE)", "start": "2026-06-22", "end": "2026-07-10", "dur": 19, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "CIVIL", "prio": 2, "grupo": "Estacionamento", "ativ": "Civil - Urbanização - Instalação de Cerca limite e Portão (Área da ENGIE)", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper Pórtico Eixo A – C2", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "real_start": "2026-05-18", "real_end": "2026-05-22", "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Rígido", "ativ": "EMEC - Barramento Rígido - Instalação de Barramento de Neutro", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "real_start": "2026-05-18", "real_end": "2026-05-21", "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper na Barra B1 – Eixo 17", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Barramento Flexível", "ativ": "EMEC - Barramento - Instalação de Jumper na Barra B2 – Eixo 17", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Barramento Equipamentos", "ativ": "EMEC - Barramento - Interligação Equipamentos PR/REATOR - C2", "start": "2026-05-18", "end": "2026-05-29", "dur": 12, "real_start": "2026-05-18", "real_end": "2026-05-22", "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Coluna SPDA - Coluna Eixo E/24", "start": "2026-05-21", "end": "2026-05-21", "dur": 1, "real_start": "2026-05-18", "real_end": "2026-05-22", "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Eixo 17 – Barra B1", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "real_start": "2026-05-21", "real_end": "2026-05-21", "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Blindagem", "ativ": "EMEC - Blindagem - Interligação Colunas Existentes – Barra B1", "start": "2026-06-06", "end": "2026-06-07", "dur": 2, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Malha de Aterramento", "ativ": "EMEC - Malha de Aterramento - Rabichos", "start": "2026-05-18", "end": "2026-05-30", "dur": 13, "real_start": "2026-05-18", "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "CIVIL - Encaminhamento - Casa Comando --> CUB [Cabo Força/Cont]", "start": "2026-05-18", "end": "2026-05-27", "dur": 10, "real_start": "2026-05-18", "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "ELE - Encaminhamento - TSA", "start": "2026-05-19", "end": "2026-05-21", "dur": 3, "real_start": "2026-05-18", "real_end": "2026-05-21", "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - CFTV [Pórtico]", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - Iluminação [Pórtico]", "start": "2026-05-25", "end": "2026-06-05", "dur": 12, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - OPGW", "start": "2026-05-18", "end": "2026-05-20", "dur": 3, "real_start": "2026-05-18", "real_end": "2026-05-21", "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 2, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - OPLAT", "start": "2026-05-18", "end": "2026-06-03", "dur": 17, "real_start": "2026-05-18", "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 1, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - Interligação ENGIE", "start": "2026-05-20", "end": "2026-05-26", "dur": 7, "real_start": "2026-05-20", "real_end": null, "restric": "", "progress": {}}, {"disc": "EMEC", "prio": 3, "grupo": "Encaminhamento", "ativ": "EMEC - Encaminhamento - TPC Barra 1/TPC Barra 2", "start": "2026-05-25", "end": "2026-05-30", "dur": 6, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - C1", "ativ": "ELE - Lançamento de Cabos - C1", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "real_start": "2026-05-18", "real_end": "2026-05-23", "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C1", "ativ": "ELE - Interligação Cabos - Painel SPCS - C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C1", "ativ": "ELE - Interligação Cabos - Pátio Equipamentos - C1", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - C2", "ativ": "ELE - Lançamento de Cabos - C2", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "real_start": "2026-05-18", "real_end": "2026-05-23", "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C2", "ativ": "ELE - Interligação Cabos - Painel SPCS - C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - C2", "ativ": "ELE - Interligação Cabos - Pátio Equipamentos - C2", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Lançamento de Cabos - Interfâce", "ativ": "ELE - Lançamento de Cabos - Interfâce", "start": "2026-05-18", "end": "2026-05-23", "dur": 6, "real_start": "2026-05-18", "real_end": "2026-05-23", "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - Interfâce", "ativ": "ELE - Interligação Cabos - Sala de Relés - Interfâce", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Interligação dos Cabos - Interfâce", "ativ": "ELE - Interligação Cabos - Equipamentos - Interfâce", "start": "2026-05-25", "end": "2026-05-29", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 1, "grupo": "Teleassistência", "ativ": "ELE - Instalação de Cameras - Pátio", "start": "2026-05-30", "end": "2026-05-31", "dur": 2, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ELÉTRICA", "prio": 2, "grupo": "Iluminação Reator", "ativ": "ELE - Iluminação Pátio/Reator", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "real_start": null, "real_end": null, "restric": "Material: Refletores", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Cabos - C1", "ativ": "COMISSIONAMENTO - N0 Cabos - C1", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Cabos - C2", "ativ": "COMISSIONAMENTO - N0 Cabos - C2", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento Cabos - Interfâce", "ativ": "COMISSIONAMENTO - N0 Cabos - Interfâce", "start": "2026-05-28", "end": "2026-06-03", "dur": 7, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SECC - C2", "ativ": "COMISSIONAMENTO - Equipamentos - SECC - C2", "start": "2026-05-18", "end": "2026-05-22", "dur": 5, "real_start": "2026-05-18", "real_end": "2026-05-22", "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Malha Principal", "ativ": "COMISSIONAMENTO - Malha Principal", "start": "2026-05-30", "end": "2026-06-03", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento Rabichos", "ativ": "COMISSIONAMENTO - Malha - Rabichos", "start": "2026-06-01", "end": "2026-06-05", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento S.A.", "ativ": "COMISSIONAMENTO - TSA", "start": "2026-05-27", "end": "2026-05-29", "dur": 3, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento S.A.", "ativ": "COMISSIONAMENTO - Cubiculo", "start": "2026-05-29", "end": "2026-05-28", "dur": 0, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Inicio Comissionamento", "ativ": "Inicio do Comissionamento", "start": "2026-05-25", "end": "2026-05-25", "dur": 1, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "COMISSIONAMENTO - Subida de Pontos (Binárias) + Funcional", "start": "2026-05-25", "end": "2026-05-27", "dur": 3, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "COMISSIONAMENTO - Teste de controle (Intertravamento + Comandos Supervisório)", "start": "2026-05-28", "end": "2026-05-29", "dur": 2, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - C1", "ativ": "COMISSIONAMENTO - Teste de proteção + Subida de Pontos analógicos + RDP", "start": "2026-05-30", "end": "2026-06-03", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "COMISSIONAMENTO - Subida de Pontos (Binárias) + Funcional", "start": "2026-06-04", "end": "2026-06-05", "dur": 2, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "COMISSIONAMENTO - Teste de controle (Intertravamento + Comandos Supervisório)", "start": "2026-06-07", "end": "2026-06-08", "dur": 2, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 2, "grupo": "Comissionamento SPCS - C2", "ativ": "COMISSIONAMENTO - Teste de proteção + Subida de Pontos analógicos + RDP", "start": "2026-06-09", "end": "2026-06-12", "dur": 4, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 1, "grupo": "Comissionamento SPCS - S.A.", "ativ": "COMISSIONAMENTO - Subida de Pontos (Binárias) + Funcional", "start": "2026-06-01", "end": "2026-06-03", "dur": 3, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 3, "grupo": "Comissionamento SPCS - Interface", "ativ": "COMISSIONAMENTO - SPCS - Interfâce Barra B1", "start": "2026-06-16", "end": "2026-06-19", "dur": 4, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "COMISSIONAMENTO", "prio": 3, "grupo": "Comissionamento SPCS - Interface", "ativ": "COMISSIONAMENTO - SPCS - Interfâce Barra B2 + ENGIE REA", "start": "2026-06-08", "end": "2026-06-12", "dur": 5, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Cubiculo", "ativ": "DESLIGAMENTO - Integração Cubiculo", "start": "2026-06-06", "end": "2026-06-07", "dur": 2, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Barra B2", "ativ": "DESLIGAMENTO - Integração Barra B2", "start": "2026-06-13", "end": "2026-06-14", "dur": 2, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Integração Barra B1", "ativ": "DESLIGAMENTO - Integração Barra B1", "start": "2026-06-20", "end": "2026-06-23", "dur": 4, "real_start": null, "real_end": null, "restric": "", "progress": {}}, {"disc": "ENERGIZAÇÃO", "prio": 1, "grupo": "Energização", "ativ": "Energização", "start": "2026-06-30", "end": "2026-06-30", "dur": 1, "real_start": null, "real_end": null, "restric": "", "progress": {}}];
 
 // ═══════════════════════ CONSTANTS ═══════════════════════
 // Use real current date (not hardcoded)
@@ -583,10 +606,10 @@ const DC = {
 const PC  = ['','#B01A08','#7A4F00','#0A6B2E','#4A4A48'];
 const PBG = ['','#FFD8D3','#FFE490','#BAEECF','#DDDDD8'];
 const PT  = ['','#580800','#3A2200','#033A16','#1A1A18'];
-const SL  = {planned:'Planejada',ongoing:'Em andamento',late:'Atrasada',pending:'A definir'};
-const SFC = {planned:'#0D3FA8',ongoing:'#0A6B2E',late:'#B01A08',pending:'#4A4A48'};
+const SL  = {planned:'Planejada',ongoing:'Em andamento',late:'Atrasada',pending:'A definir',concluded:'Concluída'};
+const SFC = {planned:'#0D3FA8',ongoing:'#0A6B2E',late:'#B01A08',pending:'#4A4A48',concluded:'#1A5C0A'};
 const SBG = {planned:'#C8DCFF',ongoing:'#BAEECF',late:'#FFD8D3',pending:'#DDDDD8'};
-const ST  = {planned:'#061A5C',ongoing:'#033A16',late:'#580800',pending:'#1A1A18'};
+const ST  = {planned:'#061A5C',ongoing:'#033A16',late:'#580800',pending:'#1A1A18',concluded:'#0A3A04'};
 const MP  = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const DNF = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 const CAT_COLORS = {
@@ -612,22 +635,34 @@ function fd(s,yr){
 }
 function sta(a,refStr){
   const ref=refStr?pd(refStr):TODAY;
-  const s=pd(a.start),e=pd(a.end);
-  // start=null means activity started before schedule (treat as ongoing if end not passed)
-  if(!s&&e){
-    if(ref>e)return'late';
+  // Se tem data real de término → CONCLUÍDA (nunca late)
+  if(a.real_end) return'concluded';
+  // Se tem início real mas sem término → em andamento (verifica atraso pelo planejado)
+  if(a.real_start){
+    const e=pd(a.end);
+    if(e&&ref>e) return'late';
     return'ongoing';
   }
-  if(!s)return'pending';
-  if(ref<s)return'planned';
-  if(ref>e)return'late';
+  // Sem dados reais → usar datas planejadas
+  const s=pd(a.start),e=pd(a.end);
+  if(!s&&e){ return ref>e?'late':'ongoing'; }
+  if(!s) return'pending';
+  if(ref<s) return'planned';
+  if(ref>e) return'late';
   return'ongoing';
 }
 function daysLeftFor(a,refStr){
   const refS=refStr||TODAY_STR;
-  const s=pd(a.start),e=pd(a.end);
   const st=sta(a,refS);
-  // null start = already started — calculate from end date
+  // Concluída: mostrar quanto tempo levou vs planejado
+  if(st==='concluded'){
+    if(a.real_end&&a.end){
+      const diff=diffDays(a.real_end,a.end);
+      return diff; // positivo=adiantou, negativo=atrasou na conclusão
+    }
+    return 0;
+  }
+  const s=pd(a.start),e=pd(a.end);
   if(!s&&e){
     if(st==='late')   return-diffDays(a.end,refS);
     return diffDays(refS,a.end);
@@ -641,6 +676,15 @@ function daysLeftFor(a,refStr){
 function dlLabel(a,refStr){
   const st=sta(a,refStr||TODAY_STR);
   const dl=daysLeftFor(a,refStr);
+  if(st==='concluded'){
+    if(a.real_end){
+      const diff=diffDays(a.real_end,a.end);
+      if(diff>0)  return{txt:`✅ Concluída (${diff}d adiantada)`,color:'#1A7A08'};
+      if(diff<0)  return{txt:`✅ Concluída (${Math.abs(diff)}d atraso)`,color:'#8B4500'};
+      return{txt:'✅ Concluída no prazo',color:'#1A7A08'};
+    }
+    return{txt:'✅ Concluída',color:'#1A7A08'};
+  }
   if(dl===null)return{txt:'—',color:'var(--ink3)'};
   if(st==='planned')return{txt:`−${Math.abs(dl)}d p/ início`,color:'var(--B)'};
   if(st==='ongoing')return{txt:`+${dl}d restantes`,color:'var(--G)'};
@@ -677,13 +721,14 @@ const discs=[...new Set(ACTS.map(a=>a.disc))];
 const total=ACTS.length,ong=ACTS.filter(a=>sta(a)==='ongoing').length,
       pln=ACTS.filter(a=>sta(a)==='planned').length,
       lat=ACTS.filter(a=>sta(a)==='late').length,
+      conc=ACTS.filter(a=>sta(a)==='concluded').length,
       p1=ACTS.filter(a=>a.prio===1).length;
 document.getElementById('kpis').innerHTML=`
   <div class="kpi-cell c-or"><div class="kpi-lbl">Total</div><div class="kpi-val">${total}</div><div class="kpi-sub">${discs.length} disciplinas</div></div>
   <div class="kpi-cell c-g"><div class="kpi-lbl">Em andamento</div><div class="kpi-val" style="color:var(--G)">${ong}</div><div class="kpi-sub">Hoje</div></div>
   <div class="kpi-cell c-b"><div class="kpi-lbl">Planejadas</div><div class="kpi-val" style="color:var(--B)">${pln}</div><div class="kpi-sub">Aguardando</div></div>
   <div class="kpi-cell c-r"><div class="kpi-lbl">Atrasadas</div><div class="kpi-val" style="color:var(--R)">${lat}</div><div class="kpi-sub">Requer Ação</div></div>
-  <div class="kpi-cell"><div class="kpi-lbl">Prioridade 1</div><div class="kpi-val">${p1}</div><div class="kpi-sub">Críticas</div></div>
+  <div class="kpi-cell" style="border-top:4px solid #1A7A08"><div class="kpi-lbl">Concluídas</div><div class="kpi-val" style="color:#1A7A08">${conc}</div><div class="kpi-sub">Realizadas</div></div>
 `;
 
 // ═══════════════════════ DISCIPLINAS (ponto 9: expandable) ═══════════════════════
@@ -810,43 +855,70 @@ function buildTimeline(){
   const byDisc={};ACTS.forEach(a=>{if(!byDisc[a.disc])byDisc[a.disc]=[];byDisc[a.disc].push(a)});
   Object.entries(byDisc).forEach(([d,da])=>{
     const c=DC[d]||{fill:'#888'};
-    html+=`<tr class="tl-disc-hdr"><td colspan="${days.length+1}" style="border-left:5px solid ${c.fill}!important">${d} · ${da.length} atividades</td></tr>`;
-    da.sort((a,b)=>a.prio-b.prio).forEach(a=>{
+    // Filter activities by status filter
+    const filtActs=tlStatusFilter==='all'?da:da.filter(a=>{
+      const s=sta(a);
+      if(tlStatusFilter==='late')      return s==='late';
+      if(tlStatusFilter==='ongoing')   return s==='ongoing';
+      if(tlStatusFilter==='concluded') return s==='concluded';
+      return true;
+    });
+    if(filtActs.length===0)return;
+    html+=`<tr class="tl-disc-hdr"><td colspan="${days.length+1}" style="border-left:5px solid ${c.fill}!important">${d} · ${filtActs.length} atividades${tlStatusFilter!=='all'?' (filtrado)':''}</td></tr>`;
+    filtActs.sort((a,b)=>a.prio-b.prio).forEach(a=>{
       const s=a.start?pd(a.start):null;
       const e=a.end?pd(a.end):null;
-      // When no date selected: all rows full opacity
-      // When date selected: dim rows not active that day
       const activeOnSel=showAll||(s&&e&&pd(selDate)>=s&&pd(selDate)<=e)||(!a.start&&e&&pd(selDate)<=e);
       const rowOpacity=activeOnSel?1:0.15;
       const actCellBg=activeOnSel?'background:var(--sf2)!important':'background:#F0EFEC!important;color:var(--ink3)!important';
       const stRef=selDate?sta(a,selDate):sta(a);
-      const barColor=stRef==='ongoing'?'var(--G)':stRef==='late'?'var(--R)':'var(--B)';
+      const planBarColor='#8BA8CC';
+      const rs=a.real_start?pd(a.real_start):null;
+      const re=a.real_end?pd(a.real_end):null;
+      const isConcluded=!!a.real_end;
+      const isLate=stRef==='late';
+
+      // Concluded badge — clean pill design
+      const concludedBadge=isConcluded
+        ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;background:#0A7A2A;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px;flex-shrink:0">
+            <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Concluída
+          </span>`
+        : isLate
+        ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;background:var(--R);color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px;flex-shrink:0">⚠ Atrasada</span>`
+        : '';
+
       html+=`<tr style="opacity:${rowOpacity}">
         <td class="tl-act-cell" title="${a.ativ}" style="${actCellBg}">
-          <span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'};width:15px;height:15px;font-size:8px;margin-right:5px;flex-shrink:0">${a.prio||'?'}</span>${a.ativ}
+          <div style="display:flex;align-items:center;gap:6px;white-space:nowrap">
+            <span class="prio-dot" style="background:${PBG[a.prio]||'#eee'};color:${PC[a.prio]||'#888'};width:16px;height:16px;min-width:16px;font-size:8px;flex-shrink:0">${a.prio||'?'}</span>
+            <span>${a.ativ}</span>
+            ${concludedBadge}
+          </div>
         </td>`;
       days.forEach(dk=>{
         const dc=pd(dk);
         const isT=dk===TODAY_STR;
         const isSel=!showAll&&dk===selDate;
         const isWE=dc.getDay()===0||dc.getDay()===6;
-        // inPlan: for null-start activities treat as spanning from beginning
         const inPlan=e&&dc<=(e)&&(s?dc>=s:true);
         const isSelActive=inPlan&&!showAll&&dk===selDate;
+        // Real bar spans real_start → real_end (or today if in progress)
+        const realEndD=re||(rs?pd(TODAY_STR):null);
+        const inReal=rs&&realEndD&&dc>=rs&&dc<=realEndD;
         let tdCls='';
         if(isT)tdCls='tl-today-col';
         else if(isSel)tdCls='tl-sel-col';
         else if(isWE)tdCls='tl-wknd-col';
+
         let inner='';
-        if(inPlan){
-          const isStart=dk===a.start;
-          const isEnd=dk===a.end;
-          const br=isStart?'4px 0 0 4px':isEnd?'0 4px 4px 0':'0';
-          const bg=isSelActive?'#FF8C00':barColor;
-          const ht=isSelActive?'18px':'13px';
-          inner=`<div style="background:${bg};height:${ht};border-radius:${br};margin:2px 1px;opacity:${isSelActive?1:.88}"></div>`;
-        }
-        html+=`<td class="${tdCls}" style="padding:2px 0">${inner}</td>`;
+        // ── PLANNED bar (top, thin, muted blue-gray) ──
+        const planBar=inPlan?`<div style="background:${isSelActive?'#FF8C00':planBarColor};height:5px;border-radius:${dk===a.start?'3px 0 0 3px':dk===a.end?'0 3px 3px 0':'0'};margin:0 1px;opacity:.7"></div>`:'<div style="height:5px;margin:0 1px"></div>';
+        // ── REAL bar (bottom, thick, vivid color) ──
+        const realBg=isConcluded?'#0A7A2A':isLate?'#C84000':'#E8560A';
+        const realBar=inReal?`<div style="background:${realBg};height:9px;border-radius:${dk===a.real_start?'3px 0 0 3px':a.real_end&&dk===a.real_end?'0 3px 3px 0':'0'};margin:0 1px" title="Real: ${a.real_start||'?'} → ${a.real_end||'em andamento'}"></div>`:'<div style="height:9px;margin:0 1px"></div>';
+        inner=`<div style="display:flex;flex-direction:column;gap:1px;padding:2px 0">${planBar}${realBar}</div>`;
+        html+=`<td class="${tdCls}" style="padding:0;vertical-align:middle">${inner}</td>`;
       });
       html+='</tr>';
     });
@@ -855,8 +927,28 @@ function buildTimeline(){
   document.getElementById('tl-wrap').innerHTML=html;
 }
 function resetTlDate(){
-  // Clear date = show ALL activities
   document.getElementById('tl-date-input').value='';
+  tlStatusFilter='all';
+  // Reset button styles
+  const allBtn=document.getElementById('tl-f-all');
+  if(allBtn){
+    ['tl-f-all','tl-f-late','tl-f-ongoing','tl-f-concluded'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      el.style.background='transparent';
+      el.style.fontWeight='600';
+    });
+    allBtn.style.background='var(--or)';
+    allBtn.style.color='#fff';
+    allBtn.style.fontWeight='700';
+    allBtn.style.borderColor='var(--or)';
+    // Reset other button colors
+    const cfg={'tl-f-late':'var(--R)','tl-f-ongoing':'#E8560A','tl-f-concluded':'#0A7A2A'};
+    Object.entries(cfg).forEach(([id,col])=>{
+      const el=document.getElementById(id);
+      if(el){el.style.borderColor=col;el.style.color=col;}
+    });
+  }
   buildTimeline();
 }
 function setTlToday(){
@@ -1187,6 +1279,31 @@ document.getElementById('legend-bar').innerHTML=
 let tlBuilt=false;
 let dayBuilt=false;
 let activeTabId='disciplinas';
+let tlStatusFilter='all'; // 'all' | 'late' | 'ongoing' | 'concluded'
+
+function setTlFilter(f, btn){
+  tlStatusFilter=f;
+  const cfg={
+    'tl-f-all':       {border:'var(--rule2)',color:'var(--ink2)', activeBg:'var(--or)',  activeColor:'#fff'},
+    'tl-f-late':      {border:'var(--R)',    color:'var(--R)',    activeBg:'var(--R)',   activeColor:'#fff'},
+    'tl-f-ongoing':   {border:'#E8560A',     color:'#E8560A',    activeBg:'#E8560A',    activeColor:'#fff'},
+    'tl-f-concluded': {border:'#0A7A2A',     color:'#0A7A2A',    activeBg:'#0A7A2A',    activeColor:'#fff'},
+  };
+  Object.entries(cfg).forEach(([id,s])=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.style.background='transparent';
+    el.style.borderColor=s.border;
+    el.style.color=s.color;
+    el.style.fontWeight='600';
+  });
+  btn.style.background=cfg[btn.id]?.activeBg||'var(--or)';
+  btn.style.borderColor=cfg[btn.id]?.activeBg||'var(--or)';
+  btn.style.color='#fff';
+  btn.style.fontWeight='700';
+  // Clear date filter when using status filter
+  buildTimeline();
+}
 // Note: swTab is defined later in the weather section with full logic
 
 // ═══════════════════════ CALENDÁRIO DE VENCIMENTOS ═══════════════════════
@@ -1200,10 +1317,11 @@ function setCalFilter(f,btn){
   calFilter=f;
   // Reset all buttons to their default (outline) state
   const cfg={
-    'cal-f-all':   {border:'var(--rule2)',  color:'var(--ink2)',  activeBg:'var(--or)',  activeColor:'#fff'},
-    'cal-f-late':  {border:'var(--R)',      color:'var(--R)',     activeBg:'var(--R)',   activeColor:'#fff'},
-    'cal-f-urgent':{border:'#C84000',       color:'#C84000',      activeBg:'#C84000',   activeColor:'#fff'},
-    'cal-f-week':  {border:'var(--Y)',      color:'var(--Y)',     activeBg:'var(--Y)',   activeColor:'#fff'},
+    'cal-f-all':       {border:'var(--rule2)',color:'var(--ink2)', activeBg:'var(--or)', activeColor:'#fff'},
+    'cal-f-late':      {border:'var(--R)',    color:'var(--R)',    activeBg:'var(--R)',  activeColor:'#fff'},
+    'cal-f-urgent':    {border:'#C84000',     color:'#C84000',     activeBg:'#C84000',  activeColor:'#fff'},
+    'cal-f-week':      {border:'var(--Y)',    color:'var(--Y)',    activeBg:'var(--Y)', activeColor:'#fff'},
+    'cal-f-concluded': {border:'#1A7A08',     color:'#1A7A08',     activeBg:'#1A7A08', activeColor:'#fff'},
   };
   Object.entries(cfg).forEach(([id,s])=>{
     const el=document.getElementById(id);
@@ -1236,8 +1354,16 @@ function buildMonthGrid(year, month, TODAYSTR, filter){
   // Determine which end-dates to show based on filter
   function matchFilter(a){
     if(!a.end) return false;
+    const st=sta(a,TODAYSTR);
+    // 'concluded' filter: show only completed
+    if(filter==='concluded') return st==='concluded';
+    // never show concluded in late/urgent/week filters
+    if(st==='concluded'){
+      if(filter==='all') return true;
+      return false;
+    }
     const dl=diffDays(TODAYSTR,a.end);
-    if(filter==='late')   return dl<0;
+    if(filter==='late')   return st==='late'||dl<0;
     if(filter==='urgent') return dl>=0&&dl<=3;
     if(filter==='week')   return dl>=0&&dl<=7;
     return true; // 'all'
@@ -1277,16 +1403,18 @@ function buildMonthGrid(year, month, TODAYSTR, filter){
 
     acts.forEach(a=>{
       const daysLeft=diffDays(TODAYSTR,a.end);
-      const s=sta(a);
-      let bg,tc;
-      if(s==='late'||daysLeft<0){bg='var(--Rbg)';tc='var(--Rtx)'}
-      else if(daysLeft===0){bg='var(--Rbg)';tc='var(--Rtx)'}
-      else if(daysLeft<=3){bg='#FFE4B0';tc='#7A3800'}
-      else if(daysLeft<=7){bg='var(--Ybg)';tc='var(--Ytx)'}
-      else if(s==='planned'){bg='var(--Bbg)';tc='var(--Btx)'}
-      else{bg='var(--Gbg)';tc='var(--Gtx)'}
-      const badgeBg=daysLeft<0?'var(--R)':daysLeft===0?'var(--R)':daysLeft<=3?'#C84000':daysLeft<=7?'var(--Y)':'var(--G)';
-      const daysTxt=daysLeft<0?`${Math.abs(daysLeft)}d atr.`:daysLeft===0?'Hoje!':daysLeft===1?'Amanhã':`${daysLeft}d`;
+      const s=sta(a,TODAYSTR);
+      let bg,tc,badgeBg,daysTxt;
+      if(s==='concluded'){
+        bg='#E8F5E0';tc='#0A3A04';badgeBg='#1A7A08';
+        const diff=a.real_end?diffDays(a.real_end,a.end):0;
+        daysTxt=diff>0?`✅ ${diff}d ant.`:diff<0?`✅ ${Math.abs(diff)}d atr.`:'✅ Prazo';
+      } else if(s==='late'||daysLeft<0){bg='var(--Rbg)';tc='var(--Rtx)';badgeBg='var(--R)';daysTxt=`${Math.abs(daysLeft)}d atr.`;}
+      else if(daysLeft===0){bg='var(--Rbg)';tc='var(--Rtx)';badgeBg='var(--R)';daysTxt='Hoje!';}
+      else if(daysLeft<=3){bg='#FFE4B0';tc='#7A3800';badgeBg='#C84000';daysTxt=`${daysLeft}d`;}
+      else if(daysLeft<=7){bg='var(--Ybg)';tc='var(--Ytx)';badgeBg='var(--Y)';daysTxt=`${daysLeft}d`;}
+      else if(s==='planned'){bg='var(--Bbg)';tc='var(--Btx)';badgeBg='var(--B)';daysTxt=`${daysLeft}d`;}
+      else{bg='var(--Gbg)';tc='var(--Gtx)';badgeBg='var(--G)';daysTxt=`${daysLeft}d`;}
       const c=DC[a.disc]||{fill:'#888'};
       html+=`<div class="cal-act-pill" style="background:${bg}" title="${a.ativ} — ${a.grupo}">
         <span class="cal-act-name" style="color:${tc}">
@@ -1321,8 +1449,13 @@ function renderCalendar(){
   // Count filtered activities for the counter label
   function matchFilter(a){
     if(!a.end)return false;
+    const st=sta(a,TODAYSTR);
+    if(calFilter==='concluded') return st==='concluded';
+    if(st==='concluded'){
+      return calFilter==='all';
+    }
     const dl=diffDays(TODAYSTR,a.end);
-    if(calFilter==='late')   return dl<0;
+    if(calFilter==='late')   return st==='late'||dl<0;
     if(calFilter==='urgent') return dl>=0&&dl<=3;
     if(calFilter==='week')   return dl>=0&&dl<=7;
     return true;
@@ -1666,10 +1799,15 @@ function buildITMonthGrid(year,month,filtActs,TODAYSTR){
       const c=DC[a.disc]||{fill:'#888',bg:'#eee',text:'#333'};
       const isStart=dk===a.start,isEnd=dk===a.end,isSameDay=a.start&&a.start===a.end;
       const isH=itSelectedActId===a.ativ,isDim=itSelectedActId!==null&&!isH;
+      const isConcl=!!a.real_end;
       let bg,tc,marker;
-      if(isSameDay){bg='var(--or)';tc='#fff';marker='◆';}
+      if(isConcl&&isEnd){bg='#1A7A08';tc='#fff';marker='✅';}
+      else if(isConcl&&isSameDay){bg='#1A7A08';tc='#fff';marker='✅';}
+      else if(isSameDay){bg='var(--or)';tc='#fff';marker='◆';}
+      else if(isStart&&isConcl){bg='#2EAA18';tc='#fff';marker='▶';}
       else if(isStart){bg='var(--G)';tc='#fff';marker='▶';}
       else if(isEnd){bg='var(--R)';tc='#fff';marker='■';}
+      else if(isConcl){bg='#C8F0B8';tc='#0A3A04';marker='';}
       else{bg=c.bg;tc=c.text;marker='';}
       const safe=a.ativ.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
       html+=`<div class="it-act-bar${isDim?' dimmed':''}${isH?' highlighted':''}"
